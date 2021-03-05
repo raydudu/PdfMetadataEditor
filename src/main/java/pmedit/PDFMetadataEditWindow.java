@@ -1,14 +1,10 @@
 package pmedit;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.Point;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,6 +43,7 @@ public class PDFMetadataEditWindow extends JFrame{
 		fc = new JFileChooser();
 		defaultMetadata = new MetadataInfo();
 		initialize();
+
 		PdfFilter pdfFilter = new PdfFilter();
 		fc.addChoosableFileFilter(pdfFilter);
 		fc.setFileFilter(pdfFilter);
@@ -95,6 +92,21 @@ public class PDFMetadataEditWindow extends JFrame{
 			}
 		});
 		setGlassPane(new FileDropSelectMessage());
+		URL ico = PDFMetadataEditWindow.class.getResource("/pmedit/favicon.png");
+		Image icoimg = new ImageIcon(ico).getImage();
+		setIconImage(icoimg);
+
+		//this is new since JDK 9
+		final Taskbar taskbar = Taskbar.getTaskbar();
+
+		try {
+			//set icon for mac os (and other systems which do support this method)
+			taskbar.setIconImage(icoimg);
+		} catch (final UnsupportedOperationException e) {
+			System.out.println("The os does not support: 'taskbar.setIconImage'");
+		} catch (final SecurityException e) {
+			System.out.println("There was a security exception for: 'taskbar.setIconImage'");
+		}
 	}
 	
 	public File getCurrentFile(){
@@ -393,7 +405,7 @@ public class PDFMetadataEditWindow extends JFrame{
 		updateSaveButton.run();
 		
 		java.net.URL imgURL = PDFMetadataEditWindow.class
-				.getResource("pdf-metadata-edit.png");
+				.getResource("favicon.png");
 		ImageIcon icoImg = new ImageIcon(imgURL);
 		setIconImage(icoImg.getImage());
 		setVisible(true);

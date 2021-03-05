@@ -342,6 +342,7 @@ public class MetadataInfo {
 			InputStream xmpDataStream = new ByteArrayInputStream(xmpData.getBytes());
 
 			// Load the metadata
+			// TODO think how to parse slightly corrupted data and not except here.
 			XMPMetadata xmp = XMPMetadata.load(xmpDataStream);
 
 			// XMP Basic

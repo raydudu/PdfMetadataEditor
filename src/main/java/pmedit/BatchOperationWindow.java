@@ -198,7 +198,7 @@ public class BatchOperationWindow extends JFrame {
 		gridBagLayout.rowHeights[4] = 0;
 
 		java.net.URL imgURL = PDFMetadataEditWindow.class
-				.getResource("pdf-metadata-edit.png");
+				.getResource("favicon.png");
 		ImageIcon icoImg = new ImageIcon(imgURL);
 		setIconImage(icoImg.getImage());
 	}
