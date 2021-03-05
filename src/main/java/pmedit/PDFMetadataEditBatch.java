@@ -74,7 +74,7 @@ public class PDFMetadataEditBatch {
 				try {
 					MetadataInfo mdFile = new MetadataInfo();
 					mdFile.loadFromPDF(file);
-					MetadataInfo md = mdParams.clone(); 
+					MetadataInfo md = mdParams.cloneData();
 					md.expand(mdFile);
 					md.saveAsPDF(file);
 					status.addStatus(file.getName(), "Done");
@@ -232,7 +232,7 @@ public class PDFMetadataEditBatch {
 					try {
 						MetadataInfo mdFile = new MetadataInfo();
 						mdFile.loadFromPDF(file);
-						MetadataInfo md = mdParams.clone(); 
+						MetadataInfo md = mdParams.cloneData();
 						md.expand(mdFile);
 						md.saveAsPDF(file);
 						status.addStatus(file.getName(), "Done");

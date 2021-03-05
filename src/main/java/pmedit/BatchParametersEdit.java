@@ -5,8 +5,6 @@ import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -17,13 +15,6 @@ public class BatchParametersEdit extends BatchParametersWindow {
 	protected MetadataEditPane defaultMetadataPane;
 
 	/**
-	 * @wbp.parser.constructor
-	 */
-	public BatchParametersEdit(BatchOperationParameters parameters) {
-		this(parameters, null);
-	}
-
-	/**
 	 * Create the frame.
 	 */
 	public BatchParametersEdit(BatchOperationParameters parameters, final Frame owner) {
@@ -31,8 +22,8 @@ public class BatchParametersEdit extends BatchParametersWindow {
 	}
 	
 	protected JLabel lblSelectFieldsTo;
-	protected void setMessage(String message){
-		lblSelectFieldsTo.setText(message);
+	protected void setMessage(){
+		lblSelectFieldsTo.setText("Select fields to be cleared below");
 	}
 
 	protected void createContentPane() {
@@ -71,12 +62,10 @@ public class BatchParametersEdit extends BatchParametersWindow {
 		panel.add(lblSelectFieldsTo, gbc_lblSelectFieldsTo);
 		
 		JButton btnSelectAll = new JButton("Select all");
-		btnSelectAll.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if(parameters != null){
-					parameters.metadata.setEnabled(true);
-					defaultMetadataPane.fillFromMetadata(parameters.metadata);
-				}
+		btnSelectAll.addActionListener(e -> {
+			if(parameters != null){
+				parameters.metadata.setEnabled(true);
+				defaultMetadataPane.fillFromMetadata(parameters.metadata);
 			}
 		});
 		GridBagConstraints gbc_btnSelectAll = new GridBagConstraints();
@@ -86,12 +75,10 @@ public class BatchParametersEdit extends BatchParametersWindow {
 		panel.add(btnSelectAll, gbc_btnSelectAll);
 		
 		JButton button = new JButton("Select none");
-		button.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if(parameters != null){
-					parameters.metadata.setEnabled(false);
-					defaultMetadataPane.fillFromMetadata(parameters.metadata);
-				}
+		button.addActionListener(e -> {
+			if(parameters != null){
+				parameters.metadata.setEnabled(false);
+				defaultMetadataPane.fillFromMetadata(parameters.metadata);
 			}
 		});
 		GridBagConstraints gbc_button = new GridBagConstraints();
@@ -121,12 +108,10 @@ public class BatchParametersEdit extends BatchParametersWindow {
 		gbc_btnClose.gridy = 2;
 		contentPane.add(btnClose, gbc_btnClose);
 
-		btnClose.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				setVisible(false);
-				windowClosed();
+		btnClose.addActionListener(e -> {
+			setVisible(false);
+			windowClosed();
 
-			}
 		});
 
 

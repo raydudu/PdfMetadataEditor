@@ -1,3 +1,4 @@
+/*
 package pmedit;
 
 import java.util.List;
@@ -9,3 +10,4 @@ public interface DdeEvent {
     public void ddeActivate(List<String> command);
 
 }
+*/

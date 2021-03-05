@@ -1,36 +1,31 @@
 package pmedit;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
 import pmedit.MetadataInfoTest.PMTuple;
 import pmedit.PDFMetadataEditBatch.ActionStatus;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.*;
 
 public class BatchCommandTest {
 
 	@Before
-	public void setUp() throws Exception {
+	public void setUp() {
 	}
 
 	@After
-	public void tearDown() throws Exception {
+	public void tearDown() {
 	}
 	static int NUM_FILES = 5;
 	@Test
-	public void testClearAll() throws FileNotFoundException, IOException, Exception {
+	public void testClearAll() throws Exception {
 		List<PMTuple> fileList = MetadataInfoTest.randomFiles(NUM_FILES);
-		List<String> args = new ArrayList<String>();
+		List<String> args = new ArrayList<>();
 		args.add("clear");
 		args.add("all");
 		
@@ -48,7 +43,7 @@ public class BatchCommandTest {
 			@Override
 			public void addError(String filename, String error) {
 				System.out.println(error);
-				assertFalse(error, true);
+				fail(error);
 			}
 			
 		});
@@ -62,9 +57,9 @@ public class BatchCommandTest {
 	}
 
 	@Test
-	public void testClearNone() throws FileNotFoundException, IOException, Exception {
+	public void testClearNone() throws Exception {
 		List<PMTuple> fileList = MetadataInfoTest.randomFiles(NUM_FILES);
-		List<String> args = new ArrayList<String>();
+		List<String> args = new ArrayList<>();
 		args.add("clear");
 		args.add("none");
 		
@@ -82,11 +77,10 @@ public class BatchCommandTest {
 			@Override
 			public void addError(String filename, String error) {
 				System.out.println(error);
-				assertFalse(error, true);
+				fail(error);
 			}
 			
 		});
-		MetadataInfo empty = new MetadataInfo();
 		for(PMTuple t: fileList){
 			MetadataInfo loaded = new MetadataInfo();
 			loaded.loadFromPDF(t.file);
@@ -96,16 +90,16 @@ public class BatchCommandTest {
 	}
 
 	@Test
-	public void testFromCSV() throws FileNotFoundException, IOException, Exception {
+	public void testFromCSV() throws Exception {
 		List<PMTuple> fileList = MetadataInfoTest.randomFiles(NUM_FILES);
-		ArrayList<String> csvLines = new ArrayList<String>();
+		ArrayList<String> csvLines = new ArrayList<>();
 		csvLines.add("file.fullPath,doc.author,dc.title");
 		for(PMTuple t: fileList){
 			csvLines.add(t.file.getAbsolutePath() + ",AUTHOR-AUTHOR,\"TITLE,TITLE\"");
 		}
 		
 		File csvFile = MetadataInfoTest.csvFile(csvLines);
-		List<String> args = new ArrayList<String>();
+		List<String> args = new ArrayList<>();
 		args.add("fromcsv");
 		
 		
@@ -121,11 +115,10 @@ public class BatchCommandTest {
 			@Override
 			public void addError(String filename, String error) {
 				System.out.println(error);
-				assertFalse(error, true);
+				fail(error);
 			}
 			
 		});
-		MetadataInfo empty = new MetadataInfo();
 		for(PMTuple t: fileList){
 			MetadataInfo loaded = new MetadataInfo();
 			loaded.loadFromPDF(t.file);

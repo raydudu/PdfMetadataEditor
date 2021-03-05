@@ -5,8 +5,6 @@ import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
@@ -28,13 +26,6 @@ public class BatchParametersRename extends BatchParametersWindow {
 	public BatchParametersRename(BatchOperationParameters parameters, final Frame owner) {
 		super(parameters, owner);
 						
-	}
-	
-	/**
-	 * @wbp.parser.constructor
-	 */
-	public BatchParametersRename(BatchOperationParameters params) {
-		this(params, null);
 	}
 
 	@Override
@@ -65,9 +56,9 @@ public class BatchParametersRename extends BatchParametersWindow {
 				gbl_panel.rowWeights = new double[]{0.0, 0.0, 0.0, Double.MIN_VALUE};
 				panel.setLayout(gbl_panel);
 				
-				final JComboBox comboBox = new JComboBox();
-				comboBox.setModel(new DefaultComboBoxModel(new String[] { "", "{doc.author} - {doc.title}.pdf",
-				"{doc.author} - {doc.creationDate}.pdf" }));
+				final JComboBox<String> comboBox = new JComboBox<>(new DefaultComboBoxModel<>(
+						new String[] { "", "{doc.author} - {doc.title}.pdf",
+						"{doc.author} - {doc.creationDate}.pdf" }));
 				comboBox.setEditable(true);
 				GridBagConstraints gbc_comboBox = new GridBagConstraints();
 				gbc_comboBox.anchor = GridBagConstraints.NORTH;
@@ -102,11 +93,9 @@ public class BatchParametersRename extends BatchParametersWindow {
 				txtpnSupportedFieldsbasictitle_1.setCaretPosition(0);
 				
 				JButton button = new JButton("Close");
-				button.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						setVisible(false);
-						windowClosed();
-					}
+				button.addActionListener(e -> {
+					setVisible(false);
+					windowClosed();
 				});
 				GridBagConstraints gbc_button = new GridBagConstraints();
 				gbc_button.anchor = GridBagConstraints.EAST;

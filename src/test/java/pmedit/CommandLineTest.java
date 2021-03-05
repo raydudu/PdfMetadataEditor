@@ -6,10 +6,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.List;
+import java.util.*;
 
 import org.junit.Test;
 
@@ -17,14 +14,14 @@ import pmedit.CommandLine.ParseError;
 
 public class CommandLineTest {
 
-	List<String> mdFieldList = Arrays.asList(new String[] { "doc.title", "doc.author", "doc.subject", "doc.keywords",
+	List<String> mdFieldList = Arrays.asList("doc.title", "doc.author", "doc.subject", "doc.keywords",
 			"doc.creator", "doc.producer", "doc.creationDate", "doc.modificationDate", "doc.trapped",
 			"basic.creatorTool", "basic.createDate", "basic.modifyDate", "basic.baseURL",
 			"basic.rating", "basic.label", "basic.nickname", "basic.identifiers", "basic.advisories",
 			"basic.metadataDate", "pdf.pdfVersion", "pdf.keywords", "pdf.producer", "dc.title",
 			"dc.description", "dc.creators", "dc.contributors", "dc.coverage", "dc.dates",
 			"dc.format", "dc.identifier", "dc.languages", "dc.publishers", "dc.relationships",
-			"dc.rights", "dc.source", "dc.subjects", "dc.types" });
+			"dc.rights", "dc.source", "dc.subjects", "dc.types");
 
 	
 	@Test
@@ -36,13 +33,13 @@ public class CommandLineTest {
 		assertNotNull(c);
 		assertTrue(c.noGui);
 		assertTrue(c.command.is("edit"));
-		assertTrue(c.fileList.equals(Arrays.asList("file1", "file2")));
+		assertEquals(c.fileList, Arrays.asList("file1", "file2"));
 	}
 
 	@Test
 	public void testClear() throws ParseError {
 		CommandLine c;
-		List<String> args = new ArrayList<String>();
+		List<String> args = new ArrayList<>();
 		args.add("clear");
 		args.addAll(mdFieldList);
 		c = CommandLine.parse(args);
@@ -59,7 +56,7 @@ public class CommandLineTest {
 	@Test
 	public void testClearNone() throws ParseError {
 		CommandLine c;
-		List<String> args = new ArrayList<String>();
+		List<String> args = new ArrayList<>();
 		args.add("clear");
 		args.add("none");
 		c = CommandLine.parse(args);
@@ -76,7 +73,7 @@ public class CommandLineTest {
 	@Test
 	public void testClearAll() throws ParseError {
 		CommandLine c;
-		List<String> args = new ArrayList<String>();
+		List<String> args = new ArrayList<>();
 		args.add("clear");
 		args.add("all");
 		c = CommandLine.parse(args);
@@ -93,7 +90,7 @@ public class CommandLineTest {
 	@Test
 	public void testClearSome() throws ParseError {
 		CommandLine c;
-		List<String> args = new ArrayList<String>();
+		List<String> args = new ArrayList<>();
 		args.add("clear");
 		args.add("all");
 		args.add("!doc.title");
@@ -116,10 +113,9 @@ public class CommandLineTest {
 	public void testEditAll() throws ParseError {
 		Calendar cal = Calendar.getInstance();
 		cal.clear();
-		cal.set(2012, 03, 03);
+		cal.set(2012, Calendar.APRIL, 3);
 		String dateString = "2012-04-03";
-		List<String> genList = new ArrayList<String>();
-		MetadataInfo md = new MetadataInfo();
+		List<String> genList = new ArrayList<>();
 		for(String field: mdFieldList){
 			if(field.endsWith("Date")){
 				genList.add(field + "=" + dateString );
@@ -128,7 +124,7 @@ public class CommandLineTest {
 				genList.add(field + "=" + dateString );
 			} else if(field.endsWith(".rating")){
 				genList.add(field + "=17");
-			} else if(md.getFieldDescription(field).isList){
+			} else if(Objects.requireNonNull(MetadataInfo.getFieldDescription(field)).isList){
 				genList.add(field + "=" + field );
 				genList.add(field + "=" + field );
 			} else {
@@ -137,7 +133,7 @@ public class CommandLineTest {
 		}
 		
 		CommandLine c;
-		List<String> args = new ArrayList<String>();
+		List<String> args = new ArrayList<>();
 		args.add("edit");
 		args.addAll(genList);
 		c = CommandLine.parse(args);
@@ -148,12 +144,12 @@ public class CommandLineTest {
 		for(String field: mdFieldList){
 			assertTrue(c.params.metadata.isEnabled(field));
 			if(field.endsWith("Date")){
-				assertEquals(cal, ((Calendar) c.params.metadata.get(field)));
+				assertEquals(cal, c.params.metadata.get(field));
 			} else  if(field.endsWith(".dates")){
 				assertEquals(Arrays.asList(cal, cal), c.params.metadata.get(field));
 			} else if(field.endsWith(".rating")){
 				assertEquals(17, c.params.metadata.get(field));
-			} else if(md.getFieldDescription(field).isList){
+			} else if(Objects.requireNonNull(MetadataInfo.getFieldDescription(field)).isList){
 				assertEquals(Arrays.asList(field, field), c.params.metadata.get(field));
 			} else {
 				assertEquals(field, c.params.metadata.get(field));
@@ -178,16 +174,14 @@ public class CommandLineTest {
 
 	@Test(expected = ParseError.class)
 	public void testInvalid1() throws ParseError {
-		CommandLine c;
-		c = CommandLine.parse(new String[]{
+		CommandLine.parse(new String[]{
 				 "--something", "editv", "doc.creationDate"
 		});
 	}
 
 	@Test(expected = ParseError.class)
 	public void testInvalid2() throws ParseError {
-		CommandLine c;
-		c = CommandLine.parse(new String[]{
+		CommandLine.parse(new String[]{
 				 "--renameTemplate"
 		});
 	}

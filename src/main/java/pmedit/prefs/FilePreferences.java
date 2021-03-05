@@ -25,8 +25,8 @@ public class FilePreferences extends AbstractPreferences
 {
   private static final Logger log = Logger.getLogger(FilePreferences.class.getName());
  
-  private Map<String, String> root;
-  private Map<String, FilePreferences> children;
+  private final Map<String, String> root;
+  private final Map<String, FilePreferences> children;
   private boolean isRemoved = false;
  
   public FilePreferences(AbstractPreferences parent, String name)
@@ -35,8 +35,8 @@ public class FilePreferences extends AbstractPreferences
  
     log.finest("Instantiating node " + name);
  
-    root = new TreeMap<String, String>();
-    children = new TreeMap<String, FilePreferences>();
+    root = new TreeMap<>();
+    children = new TreeMap<>();
  
     try {
       sync();
@@ -79,14 +79,12 @@ public class FilePreferences extends AbstractPreferences
     flush();
   }
  
-  protected String[] keysSpi() throws BackingStoreException
-  {
-    return root.keySet().toArray(new String[root.keySet().size()]);
+  protected String[] keysSpi() {
+    return root.keySet().toArray(new String[0]);
   }
  
-  protected String[] childrenNamesSpi() throws BackingStoreException
-  {
-    return children.keySet().toArray(new String[children.keySet().size()]);
+  protected String[] childrenNamesSpi() {
+    return children.keySet().toArray(new String[0]);
   }
  
   protected FilePreferences childSpi(String name)
@@ -100,6 +98,7 @@ public class FilePreferences extends AbstractPreferences
   }
  
  
+  @SuppressWarnings("SynchronizationOnLocalVariableOrMethodParameter")
   protected void syncSpi() throws BackingStoreException
   {
     if (isRemoved()) return;
@@ -107,7 +106,7 @@ public class FilePreferences extends AbstractPreferences
     final File file = FilePreferencesFactory.getPreferencesFile();
  
     if (!file.exists()) return;
- 
+
     synchronized (file) {
       Properties p = new Properties();
       try {
@@ -144,6 +143,7 @@ public class FilePreferences extends AbstractPreferences
     sb.append(name()).append('.');
   }
  
+  @SuppressWarnings("SynchronizationOnLocalVariableOrMethodParameter")
   protected void flushSpi() throws BackingStoreException
   {
     final File file = FilePreferencesFactory.getPreferencesFile();
@@ -159,7 +159,7 @@ public class FilePreferences extends AbstractPreferences
         if (file.exists()) {
           p.load(new FileInputStream(file));
  
-          List<String> toRemove = new ArrayList<String>();
+          List<String> toRemove = new ArrayList<>();
  
           // Make a list of all direct children of this node to be removed
           final Enumeration<?> pnen = p.propertyNames();

@@ -2,21 +2,13 @@ package pmedit;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import javax.xml.transform.TransformerException;
 
@@ -64,11 +56,7 @@ public class MetadataInfo {
 		public boolean modifyTime = false;
 		public boolean fullPath = false;
 
-		public boolean atLeastOne() {
-			return false;
-		}
-		
-		public void setAll(boolean value){
+		public void setAll(){
 			name = false;
 			nameWithExt = false;
 			sizeBytes = false;
@@ -77,7 +65,7 @@ public class MetadataInfo {
 			modifyTime = false;
 			fullPath = false;
 		}
-	};
+	}
 
 	public static class Basic {
 		public String title;
@@ -89,7 +77,7 @@ public class MetadataInfo {
 		public Calendar creationDate;
 		public Calendar modificationDate;
 		public String trapped;
-	};
+	}
 
 	public static class BasicEnabled {
 		public boolean title = true;
@@ -118,7 +106,7 @@ public class MetadataInfo {
 			modificationDate = value;
 			trapped = value;			
 		}
-	};
+	}
 
 	public static class XmpBasic {
 		public String creatorTool;
@@ -131,8 +119,8 @@ public class MetadataInfo {
 		public List<String> identifiers;
 		public List<String> advisories;
 		public Calendar metadataDate;
-	};
-	
+	}
+
 	public static class XmpBasicEnabled {
 		public boolean creatorTool = true;
 		public boolean createDate = true;
@@ -162,13 +150,13 @@ public class MetadataInfo {
 			advisories = value;
 			metadataDate = value;		
 		}
-	};
-	
+	}
+
 	public static class XmpPdf {
 		public String pdfVersion;
 		public String keywords;
 		public String producer;
-	};
+	}
 
 	public static class XmpPdfEnabled {
 		public boolean pdfVersion = true;
@@ -182,7 +170,7 @@ public class MetadataInfo {
 			keywords = value;
 			producer = value;	
 		}
-	};
+	}
 
 	public static class XmpDublinCore {
 		public String title;
@@ -201,7 +189,7 @@ public class MetadataInfo {
 		public String source;
 		public List<String> subjects;
 		public List<String> types;
-	};
+	}
 
 	public static class XmpDublinCoreEnabled {
 		public boolean title = true;
@@ -241,7 +229,7 @@ public class MetadataInfo {
 			subjects = value;
 			types = value;	
 		}
-	};
+	}
 
 	public static class XmpRights {
 		public String certificate;
@@ -418,29 +406,27 @@ public class MetadataInfo {
 
 	}
 
-	protected static String hrSizes[] = new String[]{ "B", "kB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };
-	public void loadFromPDF(File pdfFile) throws FileNotFoundException,
+	protected static String[] hrSizes = new String[]{ "B", "kB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };
+	public void loadFromPDF(File pdfFile) throws
 			IOException {
 		
 		loadPDFFileInfo(pdfFile);
 
-		PDDocument document = null;
+		PDDocument document;
 		FileInputStream inputStream = new FileInputStream(pdfFile);
 		document = PDDocument.load(inputStream);
 		loadFromPDF(document);
 
-		if (document != null) {
-			try {
-				document.close();
-			} catch (Exception e) {
+		try {
+			document.close();
+		} catch (Exception ignored) {
 
-			}
 		}
 		inputStream.close();
 	}
 	
 
-	public void loadPDFFileInfo(File pdfFile) throws FileNotFoundException, IOException {
+	public void loadPDFFileInfo(File pdfFile) throws IOException {
 		file.fullPath = pdfFile.getAbsolutePath();
 		file.nameWithExt = pdfFile.getName();
 		BasicFileAttributes attrs = Files.readAttributes(pdfFile.toPath(), BasicFileAttributes.class);
@@ -736,7 +722,7 @@ public class MetadataInfo {
 				List<String> old= dcOld.getContributors();
 				if(old != null){
 					for(String a: old){
-						dcS.addContributor(a);;
+						dcS.addContributor(a);
 						atLeastOneXmpDcSet = true;
 					}
 				}
@@ -753,7 +739,7 @@ public class MetadataInfo {
 				List<String> old= dcOld.getPublishers();
 				if(old != null){
 					for(String a: old){
-						dcS.addPublisher(a);;
+						dcS.addPublisher(a);
 						atLeastOneXmpDcSet = true;
 					}
 				}
@@ -770,7 +756,7 @@ public class MetadataInfo {
 				List<String> old= dcOld.getRelationships();
 				if(old != null){
 					for(String a: old){
-						dcS.addRelation(a);;
+						dcS.addRelation(a);
 						atLeastOneXmpDcSet = true;
 					}
 				}
@@ -787,7 +773,7 @@ public class MetadataInfo {
 				List<String> old= dcOld.getSubjects();
 				if(old != null){
 					for(String a: old){
-						dcS.addSubject(a);;
+						dcS.addSubject(a);
 						atLeastOneXmpDcSet = true;
 					}
 				}
@@ -804,7 +790,7 @@ public class MetadataInfo {
 				List<String> old= dcOld.getTypes();
 				if(old != null){
 					for(String a: old){
-						dcS.addType(a);;
+						dcS.addType(a);
 						atLeastOneXmpDcSet = true;
 					}
 				}
@@ -821,7 +807,7 @@ public class MetadataInfo {
 				List<String> old= dcOld.getLanguages();
 				if(old != null){
 					for(String a: old){
-						dcS.addLanguage(a);;
+						dcS.addLanguage(a);
 						atLeastOneXmpDcSet = true;
 					}
 				}
@@ -838,7 +824,7 @@ public class MetadataInfo {
 				List<String> old= dcOld.getCreators();
 				if(old != null){
 					for(String a: old){
-						dcS.addCreator(a);;
+						dcS.addCreator(a);
 						atLeastOneXmpDcSet = true;
 					}
 				}
@@ -938,7 +924,7 @@ public class MetadataInfo {
 				List<Calendar> old= dcOld.getDates();
 				if(old != null){
 					for(Calendar a: old){
-						dcS.addDate(a);;
+						dcS.addDate(a);
 						atLeastOneXmpDcSet = true;
 					}
 				}
@@ -953,7 +939,7 @@ public class MetadataInfo {
 			
 			if(rightsEnabled.certificate){
 				if(rights.certificate != null){
-					ri.setCertificateURL(rights.certificate);;
+					ri.setCertificateURL(rights.certificate);
 					atLeastOneXmpRightsSet = true;
 				}
 			} else if(riOld != null){
@@ -966,7 +952,7 @@ public class MetadataInfo {
 
 			if(rightsEnabled.marked){
 				if(rights.marked != null){
-					ri.setMarked(rights.marked);;
+					ri.setMarked(rights.marked);
 					atLeastOneXmpRightsSet = true;
 				}
 			} else if(riOld != null){
@@ -996,7 +982,7 @@ public class MetadataInfo {
 
 			if(rightsEnabled.copyright){
 				if(rights.copyright != null){
-					ri.setCopyright(rights.copyright);;
+					ri.setCopyright(rights.copyright);
 					atLeastOneXmpRightsSet = true;
 				}
 			} else if(riOld != null){
@@ -1054,7 +1040,7 @@ public class MetadataInfo {
 	}
 	
 	public void saveAsPDF(File pdfFile, File newFile) throws Exception {
-		PDDocument document = null;
+		PDDocument document;
 
 		FileInputStream inputStream = new FileInputStream(pdfFile);
 		document = PDDocument.load(inputStream);
@@ -1064,7 +1050,7 @@ public class MetadataInfo {
 		if (document != null) {
 			try {
 				document.close();
-			} catch (Exception e) {
+			} catch (Exception ignored) {
 
 			}
 		}
@@ -1087,7 +1073,7 @@ public class MetadataInfo {
 
 		dc.title = doc.title;
 		dc.description = doc.subject;
-		dc.creators = Arrays.asList(new String[] { doc.author });
+		dc.creators = Collections.singletonList(doc.author);
 		dcEnabled.title = docEnabled.title;
 		dcEnabled.description = docEnabled.subject;
 		dcEnabled.creators = docEnabled.author;
@@ -1110,17 +1096,18 @@ public class MetadataInfo {
 
 		doc.title = dc.title;
 		doc.subject = dc.description;
-		String author = "";
+		StringBuilder author = new StringBuilder();
 		if( dc.creators != null){
 			String delim = "";
 			for(String creator: dc.creators){
-				author += delim + creator;
+				author.append(delim).append(creator);
 				delim = ", ";
 			}
 		} else {
 			author = null;
 		}
-		doc.author = author;
+		assert author != null;
+		doc.author = author.toString();
 		docEnabled.title = dcEnabled.title;
 		docEnabled.subject = dcEnabled.description;
 		docEnabled.author = dcEnabled.creators;
@@ -1143,16 +1130,16 @@ public class MetadataInfo {
 	}
 
 	public static List<String> keys(){
-		return new ArrayList<String>(_mdFields.keySet());
+		return new ArrayList<>(_mdFields.keySet());
 	}
 
 	public static boolean keyIsWritable(String key){
 		FieldDescription fd = getFieldDescription(key);
-		return (fd != null) ? fd.isWritable :  false;
+		return fd == null || !fd.isWritable;
 	}
 	
 	public <T> Map<String, T> asFlatMap(Function<Object, T> convertor) {
-		LinkedHashMap<String, T> map = new LinkedHashMap<String, T>();
+		LinkedHashMap<String, T> map = new LinkedHashMap<>();
 
 		for (String fieldName : keys()) {
 				Object o = get(fieldName);
@@ -1162,24 +1149,10 @@ public class MetadataInfo {
 	}
 
 	public Map<String, Object> asFlatMap() {
-		return asFlatMap(new Function<Object, Object>() {
-			@Override
-			public Object apply(Object t) {
-				return t;
-			}
-		});
+		return asFlatMap(t -> t);
 	}
 
-	public Map<String, String> asFlatStringMap() {
-		LinkedHashMap<String, String> map = new LinkedHashMap<String, String>();
 
-		for (String fieldName : keys()) {
-				map.put(fieldName ,getString(fieldName));
-		}
-		return map;
-	}
-
-	
 	public void  fromFlatMap(Map<String, Object> map, Function<Object, Object> convertor) {
 		for (String fieldName : keys()) {
 			if(map.containsKey(fieldName)){
@@ -1188,7 +1161,7 @@ public class MetadataInfo {
 		}
 	}
 
-	public MetadataInfo clone(){
+	public MetadataInfo cloneData(){
 		MetadataInfo md = new MetadataInfo();
 		md.copyFrom(this);
 		return md;
@@ -1198,15 +1171,6 @@ public class MetadataInfo {
 		for (String fieldName : keys()) {
 			set(fieldName, other.get(fieldName));
 		}
-	}
-	
-	public void copyUnset(MetadataInfo other){
-		for (String fieldName : keys()) {
-			Object o = get(fieldName);
-			if( o == null){
-				set(fieldName, other.get(fieldName));
-			}
-		}		
 	}
 
 	public void copyUnsetExpanded(MetadataInfo other, MetadataInfo expandInfo){
@@ -1251,22 +1215,15 @@ public class MetadataInfo {
 		}
 		
 	}
-	
-	public String toJson() {
-		return toJson(0);
-	}
-	
+
 	public String toJson(int indent) {
-		Map<String, Object> map = asFlatMap(new Function<Object, Object>() {
-			@Override
-			public Object apply(Object t) {
-				if (t != null){
-					if(t instanceof Calendar) {
-						return DateFormat.formatDateTimeFull((Calendar)t);
-					}
+		Map<String, Object> map = asFlatMap(t -> {
+			if (t != null){
+				if(t instanceof Calendar) {
+					return DateFormat.formatDateTimeFull((Calendar)t);
 				}
-				return t;
 			}
+			return t;
 		});
 		StringBuilder sb = new StringBuilder();
 		String istr=new String(new char[indent]).replace("\0", " ");
@@ -1311,17 +1268,14 @@ public class MetadataInfo {
 
 	public void fromYAML(String yamlString) {
 		Yaml yaml = new Yaml();
-		Map<String, Object> map = (Map<String, Object>) yaml.load(yamlString);
-		fromFlatMap(map, new Function<Object, Object>() {
-			@Override
-			public Object apply(Object t) {
-				if(t instanceof Date){
-					  Calendar cal = Calendar.getInstance();
-					  cal.setTime((Date)t);
-					  return cal;				
-				}
-				return t;
+		Map<String, Object> map = yaml.load(yamlString);
+		fromFlatMap(map, t -> {
+			if(t instanceof Date){
+				  Calendar cal = Calendar.getInstance();
+				  cal.setTime((Date)t);
+				  return cal;
 			}
+			return t;
 		});
 	}
 	
@@ -1389,7 +1343,7 @@ public class MetadataInfo {
 				map.remove(key);
 			}
 		}
-		Map<String, Boolean> enabledMap = new LinkedHashMap<String, Boolean>();
+		Map<String, Boolean> enabledMap = new LinkedHashMap<>();
 		// Don't store true values as they are the default
 		for(String keyEnabled: _mdEnabledFields.keySet()){
 			if(!isEnabled(keyEnabled)){
@@ -1409,7 +1363,7 @@ public class MetadataInfo {
 	
 	public static MetadataInfo fromPersistenceString(String yamlString) {
 		Yaml yaml = new Yaml();
-		Map<String, Object> map = (Map<String, Object>) yaml.load(yamlString);
+		Map<String, Object> map = yaml.load(yamlString);
 		MetadataInfo md =new MetadataInfo();
 		md.fromYAML(yamlString);
 
@@ -1466,7 +1420,7 @@ public class MetadataInfo {
 				return "";
 			}
 			if(isList){
-				return ListFormat.humanReadable((List)value);
+				return ListFormat.humanReadable((List<Object>)value);
 			} else if(type == FieldID.FieldType.DateField){
 				return DateFormat.formatDateTime((Calendar)value);
 			} else if(type == FieldID.FieldType.BoolField){
@@ -1482,21 +1436,21 @@ public class MetadataInfo {
 			}
 			if(isList){
 				if(type == FieldID.FieldType.StringField){
-					return Arrays.asList(value);
+					return Collections.singletonList(value);
 				} else if(type == FieldID.FieldType.TextField){
 					return Arrays.asList(value.split("\n"));
 				} else if(type == FieldID.FieldType.IntField ){
 					// TODO: possible allow comma separated interger list
-					return Arrays.asList(Integer.parseInt(value));
+					return Collections.singletonList(Integer.parseInt(value));
 				} else if(type == FieldID.FieldType.BoolField ){
 					// TODO: possible allow comma separated boolean list
 					String v = value.toLowerCase().trim();
 					Boolean b = null;
 					if (v.equals("true") || v.equals("yes")) b = true;
 					if (v.equals("false") || v.equals("no")) b =  false;
-					return Arrays.asList( b );
+					return Collections.singletonList(b);
 				} else if(type == FieldID.FieldType.DateField){
-					List<Calendar> rval = new ArrayList<Calendar>();
+					List<Calendar> rval = new ArrayList<>();
 					for(String line:value.split("\n")){
 						try {
 							rval.add(DateFormat.parseDate(line.trim()));
@@ -1539,19 +1493,19 @@ public class MetadataInfo {
 				}
 				String name = mdStruct.name().length() > 0 ? mdStruct.name() : field.getName();
 				FieldDescription t = new FieldDescription(prefix + name, field, null, mdStruct.access() == MdStruct.Access.ReadWrite);
-				List<FieldDescription> a = new ArrayList<FieldDescription>(ancestors);
+				List<FieldDescription> a = new ArrayList<>(ancestors);
 				a.add(t);
 				traverseFields(a, true, field.getType(), mdType, f);
 			} else {
 				FieldID fieldId = field.getAnnotation(FieldID.class);
-				boolean isParentWritable = (ancestors.size() > 0) ? ancestors.get(ancestors.size()-1).isWritable : true;
+				boolean isParentWritable = ancestors.size() <= 0 || ancestors.get(ancestors.size() - 1).isWritable;
 				if(fieldId != null){
 					String prefix = ancestors.size() > 0 ? ancestors.get(ancestors.size()-1).name : "";
 					if(prefix.length() > 0){
 						prefix += ".";
 					}
 					FieldDescription t =new FieldDescription(prefix + fieldId.value(), field, fieldId.type(), isParentWritable);
-					List<FieldDescription> a = new ArrayList<FieldDescription>(ancestors);
+					List<FieldDescription> a = new ArrayList<>(ancestors);
 					a.add(t);
 					f.apply(a);
 				} else if( all ) {
@@ -1560,7 +1514,7 @@ public class MetadataInfo {
 						prefix += ".";
 					}
 					FieldDescription t =new FieldDescription(prefix + field.getName(), field, isParentWritable);
-					List<FieldDescription> a = new ArrayList<FieldDescription>(ancestors);
+					List<FieldDescription> a = new ArrayList<>(ancestors);
 					a.add(t);
 					f.apply(a);
 				}
@@ -1571,22 +1525,22 @@ public class MetadataInfo {
 	final static Map<String, List<FieldDescription>> _mdFields;
 	final static Map<String, List<FieldDescription>> _mdEnabledFields;
 	static {
-		_mdFields = new LinkedHashMap<String, List<FieldDescription>>();
-		_mdEnabledFields = new LinkedHashMap<String, List<FieldDescription>>();
-		traverseFields(new ArrayList<FieldDescription>(), false, MetadataInfo.class, StructType.MdStruct, new Function<List<FieldDescription>, Void>() {
+		_mdFields = new LinkedHashMap<>();
+		_mdEnabledFields = new LinkedHashMap<>();
+		traverseFields(new ArrayList<>(), false, MetadataInfo.class, StructType.MdStruct, new Function<>() {
 			@Override
 			public Void apply(List<FieldDescription> t) {
-				if(t.size()>0){
-					_mdFields.put(t.get(t.size()-1).name, t);
+				if (t.size() > 0) {
+					_mdFields.put(t.get(t.size() - 1).name, t);
 				}
 				return null;
 			}
 		});
-		traverseFields(new ArrayList<FieldDescription>(), false, MetadataInfo.class, StructType.MdEnableStruct, new Function<List<FieldDescription>, Void>() {
+		traverseFields(new ArrayList<>(), false, MetadataInfo.class, StructType.MdEnableStruct, new Function<>() {
 			@Override
 			public Void apply(List<FieldDescription> t) {
-				if(t.size()>0){
-					_mdEnabledFields.put(t.get(t.size()-1).name, t);
+				if (t.size() > 0) {
+					_mdEnabledFields.put(t.get(t.size() - 1).name, t);
 				}
 				return null;
 			}
@@ -1620,6 +1574,7 @@ public class MetadataInfo {
 			}
 		}
 		if(toString){
+			assert fieldD != null;
 			return fieldD.makeStringFromValue(current);
 		}
 		return current;
@@ -1659,8 +1614,9 @@ public class MetadataInfo {
 			if(fieldD.isList && append){
 				List<Object> l = (List<Object>) fieldD.field.get(current);
 				if(l == null){
-					l = new ArrayList<Object>();
-				} 
+					l = new ArrayList<>();
+				}
+				assert value != null;
 				if(List.class.isAssignableFrom(value.getClass())){
 					l.addAll((List)value);
 				} else {
@@ -1724,7 +1680,7 @@ public class MetadataInfo {
 		md.basic.rating = 3; 
 		md.basic.label = "Horror Fiction Collection";
 		md.basic.nickname = "dracula";
-		md.basic.identifiers = Arrays.asList("Dracula_original_edition");
+		md.basic.identifiers = Collections.singletonList("Dracula_original_edition");
 		//md.xmpBasic.advisories ; 
 		md.basic.metadataDate = DateFormat.parseDateOrNull("2012-12-14 00:00:00");
 
@@ -1734,7 +1690,7 @@ public class MetadataInfo {
 
 		md.dc.title = md.doc.title;
 		md.dc.description = "The famous Bram Stocker book"; 
-		md.dc.creators = new ArrayList<String>();
+		md.dc.creators = new ArrayList<>();
 		md.dc.creators.add("Bram Stocker");
 		md.dc.subjects = Arrays.asList(md.doc.subject.split("\\s*,\\s*"));
 		

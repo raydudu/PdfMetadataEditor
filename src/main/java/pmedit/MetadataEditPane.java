@@ -30,15 +30,14 @@ import com.toedter.calendar.JDateChooser;
 
 public class MetadataEditPane {
 
-	public static interface FieldSetGet {
-		public void apply(Object field, FieldID anno);
+	public interface FieldSetGet {
+		void apply(Object field, FieldID anno);
 	}
 
-	public static interface FieldEnabledCheckBox {
-		public void apply(JCheckBox field, FieldEnabled anno);
+	public interface FieldEnabledCheckBox {
+		void apply(JCheckBox field, FieldEnabled anno);
 	}
 
-	private static final long serialVersionUID = 6994489903939856136L;
 	public JPanel basicMetaPanel;
 
 	@FieldID("doc.title")
@@ -54,7 +53,7 @@ public class MetadataEditPane {
 	@FieldID("doc.producer")
 	public JTextField basicProducer;
 	@FieldID("doc.trapped")
-	public JComboBox basicTrapped;
+	public JComboBox<String> basicTrapped;
 	@FieldID(value = "doc.creationDate", type = FieldID.FieldType.DateField)
 	public JDateChooser basicCreationDate;
 	@FieldID(value = "doc.modificationDate", type = FieldID.FieldType.DateField)
@@ -122,7 +121,7 @@ public class MetadataEditPane {
 	@FieldID("rights.certificate")
 	public JTextField xmpRightsCertificate;
 	@FieldID(value = "rights.marked", type = FieldID.FieldType.BoolField)
-	public JComboBox xmpRightsMarked;
+	public JComboBox<String> xmpRightsMarked;
 	@FieldID(value = "rights.owner" , type = FieldID.FieldType.TextField)
 	public JTextArea xmpRightsOwner;
 	@FieldID(value = "rights.copyright")
@@ -140,9 +139,6 @@ public class MetadataEditPane {
 	public JPanel xmpRightsMetaPanel;
 
 	public JTabbedPane tabbedaPane;
-	private JScrollPane scrollPane;
-	private JScrollPane scrollPane_1;
-	private JScrollPane scrollPane_2;
 
 	@FieldEnabled("doc.title")
 	public JCheckBox basicTitleEnabled;
@@ -235,17 +231,12 @@ public class MetadataEditPane {
 	@FieldEnabled("rights.webStatement")
 	public JCheckBox xmpRightsWebStatementEnabled;
 
-	
-	
-	private JScrollPane scrollPane_3;
-	private JScrollPane scrollPane_4;
 
 	public MetadataEditPane() {
 		initialize();
 	}
 
 	private void initialize() {
-		long startTime = System.nanoTime(), cnt=1;
 
 		tabbedaPane = new JTabbedPane(JTabbedPane.TOP);
 		JScrollPane basicScrollpane = new JScrollPane();
@@ -334,8 +325,8 @@ public class MetadataEditPane {
 		gbc_basicSubjectEnabled.gridx = 1;
 		gbc_basicSubjectEnabled.gridy = 2;
 		basicMetaPanel.add(basicSubjectEnabled, gbc_basicSubjectEnabled);
-		
-		scrollPane_1 = new JScrollPane();
+
+		JScrollPane scrollPane_1 = new JScrollPane();
 		GridBagConstraints gbc_scrollPane_1 = new GridBagConstraints();
 		gbc_scrollPane_1.weighty = 0.5;
 		gbc_scrollPane_1.anchor = GridBagConstraints.WEST;
@@ -366,8 +357,8 @@ public class MetadataEditPane {
 		gbc_basicKeywordsEnabled.gridx = 1;
 		gbc_basicKeywordsEnabled.gridy = 3;
 		basicMetaPanel.add(basicKeywordsEnabled, gbc_basicKeywordsEnabled);
-		
-		scrollPane_2 = new JScrollPane();
+
+		JScrollPane scrollPane_2 = new JScrollPane();
 		GridBagConstraints gbc_scrollPane_2 = new GridBagConstraints();
 		gbc_scrollPane_2.weighty = 0.5;
 		gbc_scrollPane_2.anchor = GridBagConstraints.WEST;
@@ -507,8 +498,8 @@ public class MetadataEditPane {
 		gbc_basicTrappedEnabled.gridy = 8;
 		basicMetaPanel.add(basicTrappedEnabled, gbc_basicTrappedEnabled);
 
-		basicTrapped = new JComboBox();
-		basicTrapped.setModel(new DefaultComboBoxModel(new String[] { "True", "False", "Unknown" }));
+		basicTrapped = new JComboBox<>();
+		basicTrapped.setModel(new DefaultComboBoxModel<>(new String[] { "True", "False", "Unknown" }));
 		GridBagConstraints gbc_basicTrapped = new GridBagConstraints();
 		gbc_basicTrapped.anchor = GridBagConstraints.WEST;
 		gbc_basicTrapped.gridx = 2;
@@ -825,9 +816,9 @@ public class MetadataEditPane {
 		gbc_xmpPdfKeywordsEnabled.gridx = 1;
 		gbc_xmpPdfKeywordsEnabled.gridy = 0;
 		xmlPdfMetaPanel.add(xmpPdfKeywordsEnabled, gbc_xmpPdfKeywordsEnabled);
-		
 
-		scrollPane = new JScrollPane();
+
+		JScrollPane scrollPane = new JScrollPane();
 		GridBagConstraints gbc_scrollPane = new GridBagConstraints();
 		gbc_scrollPane.weighty = 1.0;
 		gbc_scrollPane.weightx = 1.0;
@@ -1379,8 +1370,8 @@ public class MetadataEditPane {
 		gbc_xmpRightsMarkedEnabled.gridy = 1;
 		xmpRightsMetaPanel.add(xmpRightsMarkedEnabled, gbc_xmpRightsMarkedEnabled);
 
-		xmpRightsMarked = new JComboBox();
-		xmpRightsMarked.setModel(new DefaultComboBoxModel(new String[] { "Unset", "Yes", "No" }));
+		xmpRightsMarked = new JComboBox<>();
+		xmpRightsMarked.setModel(new DefaultComboBoxModel<>(new String[] { "Unset", "Yes", "No" }));
 		GridBagConstraints gbc_xmpRightsMarked = new GridBagConstraints();
 		gbc_xmpRightsMarked.anchor = GridBagConstraints.WEST;
 		gbc_xmpRightsMarked.fill = GridBagConstraints.HORIZONTAL;
@@ -1545,15 +1536,11 @@ public class MetadataEditPane {
 			if(setGet != null){
 				FieldID annos = field.getAnnotation(FieldID.class);
 				if (annos != null) {
-					if (annos.value() != null && annos.value().length() > 0) {
-						Object f = null;
+					if (annos.value().length() > 0) {
+						Object f;
 						try {
 							f = field.get(this);
-						} catch (IllegalArgumentException e) {
-							System.err.println("traverseFields on (" + annos.value() + ")");
-							e.printStackTrace();
-							continue;
-						} catch (IllegalAccessException e) {
+						} catch (IllegalArgumentException | IllegalAccessException e) {
 							System.err.println("traverseFields on (" + annos.value() + ")");
 							e.printStackTrace();
 							continue;
@@ -1568,14 +1555,9 @@ public class MetadataEditPane {
 					try {
 						JCheckBox f = (JCheckBox) field.get(this);
 						fieldEnabled.apply(f, annosEnabled);
-					} catch (IllegalArgumentException e) {
+					} catch (IllegalArgumentException | IllegalAccessException e) {
 						System.err.println("traverseFields on (" + annosEnabled.value() + ")");
 						e.printStackTrace();
-						continue;
-					} catch (IllegalAccessException e) {
-						System.err.println("traverseFields on (" + annosEnabled.value() + ")");
-						e.printStackTrace();
-						continue;
 					}
 				}
 			}
@@ -1584,160 +1566,115 @@ public class MetadataEditPane {
 	
 	
 	public void showEnabled(final boolean show) {
-		traverseFields(null, new MetadataEditPane.FieldEnabledCheckBox() {
-			
-			@Override
-			public void apply(JCheckBox field, FieldEnabled anno) {
-				field.setVisible(show);
-				field.setEnabled(show);
-				
-			}
+		traverseFields(null, (field, anno) -> {
+			field.setVisible(show);
+			field.setEnabled(show);
+
 		});
 	}
 
 	public void disableEdit() {
-		traverseFields(new MetadataEditPane.FieldSetGet() {
-			@Override
-			public void apply(Object field, FieldID anno) {
-				if (field instanceof JComponent) {
-					((JComponent) field).setEnabled(false);
-				}
+		traverseFields((field, anno) -> {
+			if (field instanceof JComponent) {
+				((JComponent) field).setEnabled(false);
 			}
 		}, null);
 	}
 
 	void clear() {
-		traverseFields(new MetadataEditPane.FieldSetGet() {
-			@Override
-			public void apply(Object field, FieldID anno) {
-				if (field instanceof JTextField) {
-					((JTextField) field).setText(null);
-				}
-				if (field instanceof JTextArea) {
-					((JTextArea) field).setText(null);
-				}
-				if (field instanceof JComboBox) {
-					objectToField((JComboBox) field, null, anno.type() == FieldID.FieldType.BoolField);
-				}
-				if (field instanceof JDateChooser) {
-					objectToField((JDateChooser) field, null);
-				}
-				if (field instanceof JSpinner) {
-					objectToField((JSpinner) field, null);
-				}
+		traverseFields((field, anno) -> {
+			if (field instanceof JTextField) {
+				((JTextField) field).setText(null);
 			}
-		}, new MetadataEditPane.FieldEnabledCheckBox() {			
-			@Override
-			public void apply(JCheckBox field, FieldEnabled anno) {
-				field.setSelected(true);
-				
+			if (field instanceof JTextArea) {
+				((JTextArea) field).setText(null);
 			}
-		});
+			if (field instanceof JComboBox) {
+				objectToField((JComboBox<String>) field, null, anno.type() == FieldID.FieldType.BoolField);
+			}
+			if (field instanceof JDateChooser) {
+				objectToField((JDateChooser) field, null);
+			}
+			if (field instanceof JSpinner) {
+				objectToField((JSpinner) field, null);
+			}
+		}, (field, anno) -> field.setSelected(true));
 	}
 
 	void fillFromMetadata(final MetadataInfo metadataInfo) {
 
-		traverseFields(new MetadataEditPane.FieldSetGet() {
-			@Override
-			public void apply(Object field, FieldID anno) {
+		traverseFields((field, anno) -> {
 
-				if (field instanceof JTextField) {
-					((JTextField) field).setText(metadataInfo.getString(anno.value()));
-				}
-				if (field instanceof JTextArea) {
-					((JTextArea) field).setText(metadataInfo.getString(anno.value()));
-				}
+			if (field instanceof JTextField) {
+				((JTextField) field).setText(metadataInfo.getString(anno.value()));
+			}
+			if (field instanceof JTextArea) {
+				((JTextArea) field).setText(metadataInfo.getString(anno.value()));
+			}
 
-				Object value = metadataInfo.get(anno.value());
-				if (field instanceof JComboBox) {
-					objectToField((JComboBox) field, value, anno.type() == FieldID.FieldType.BoolField);
-				}
-				if (field instanceof JDateChooser) {
-					objectToField((JDateChooser) field, value);
-				}
-				if (field instanceof JSpinner) {
-					objectToField((JSpinner) field, value);
-				}
+			Object value = metadataInfo.get(anno.value());
+			if (field instanceof JComboBox) {
+				objectToField((JComboBox<String>) field, value, anno.type() == FieldID.FieldType.BoolField);
 			}
-		}, new MetadataEditPane.FieldEnabledCheckBox() {			
-			@Override
-			public void apply(JCheckBox field, FieldEnabled anno) {
-				field.setSelected(metadataInfo.isEnabled(anno.value()));
-				
+			if (field instanceof JDateChooser) {
+				objectToField((JDateChooser) field, value);
 			}
-		});
+			if (field instanceof JSpinner) {
+				objectToField((JSpinner) field, value);
+			}
+		}, (field, anno) -> field.setSelected(metadataInfo.isEnabled(anno.value())));
 
 	}
 
 	void copyToMetadata(final MetadataInfo metadataInfo) {
 
-		traverseFields(new MetadataEditPane.FieldSetGet() {
-			@Override
-			public void apply(Object field, FieldID anno) {
+		traverseFields((field, anno) -> {
 
-				if (field instanceof JTextField || field instanceof JTextArea) {
-					String text = (field instanceof JTextField) ? ((JTextField) field).getText()
-							: ((JTextArea) field).getText();
-					if (text.length() == 0) {
-						text = null;
-					}
-					metadataInfo.setFromString(anno.value(), text);
+			if (field instanceof JTextField || field instanceof JTextArea) {
+				String text = (field instanceof JTextField) ? ((JTextField) field).getText()
+						: ((JTextArea) field).getText();
+				if (text.length() == 0) {
+					text = null;
 				}
-				if (field instanceof JSpinner) {
-					switch (anno.type()) {
-					case IntField:
-						Integer i = (Integer) ((JSpinner) field).getModel().getValue();
-						metadataInfo.set(anno.value(), i);
-						break;
-					default:
-						throw new RuntimeException("Cannot store Integer in :" + anno.type());
-
-					}
-				}
-				if (field instanceof JComboBox) {
-					String text = (String) ((JComboBox) field).getModel().getSelectedItem();
-					if (text != null && text.length() == 0) {
-						text = null;
-					}
-					switch (anno.type()) {
-					case StringField:
-						metadataInfo.set(anno.value(), text);
-						break;
-					case BoolField:
-						metadataInfo.setFromString(anno.value(), text);
-						break;
-					default:
-						throw new RuntimeException("Cannot (store (choice text) in :" + anno.type());
-
-					}
-				}
-				if (field instanceof JDateChooser) {
-					switch (anno.type()) {
-					case DateField:
-						metadataInfo.set(anno.value(), ((JDateChooser) field).getCalendar());
-						break;
-					default:
-						throw new RuntimeException("Cannot store Calendar in :" + anno.type());
-
-					}
+				metadataInfo.setFromString(anno.value(), text);
+			}
+			if (field instanceof JSpinner) {
+				if (anno.type() == FieldID.FieldType.IntField) {
+					Integer i = (Integer) ((JSpinner) field).getModel().getValue();
+					metadataInfo.set(anno.value(), i);
+				} else {
+					throw new RuntimeException("Cannot store Integer in :" + anno.type());
 				}
 			}
-		}, new MetadataEditPane.FieldEnabledCheckBox() {			
-			@Override
-			public void apply(JCheckBox field, FieldEnabled anno) {
-				metadataInfo.setEnabled(anno.value(), field.isSelected());
-				
+			if (field instanceof JComboBox) {
+				String text = (String) ((JComboBox) field).getModel().getSelectedItem();
+				if (text != null && text.length() == 0) {
+					text = null;
+				}
+				switch (anno.type()) {
+					case StringField -> metadataInfo.set(anno.value(), text);
+					case BoolField -> metadataInfo.setFromString(anno.value(), text);
+					default -> throw new RuntimeException("Cannot (store (choice text) in :" + anno.type());
+				}
 			}
-		});
+			if (field instanceof JDateChooser) {
+				if (anno.type() == FieldID.FieldType.DateField) {
+					metadataInfo.set(anno.value(), ((JDateChooser) field).getCalendar());
+				} else {
+					throw new RuntimeException("Cannot store Calendar in :" + anno.type());
+				}
+			}
+		}, (field, anno) -> metadataInfo.setEnabled(anno.value(), field.isSelected()));
 
 	}
 
-	private void objectToField(JComboBox field, Object o, boolean oIsBool) {
+	private void objectToField(JComboBox<String> field, Object o, boolean oIsBool) {
 		if (o instanceof String) {
 			field.getModel().setSelectedItem(o);
 		}else if (o instanceof Boolean || oIsBool) {
 			String v = "Unset";
 			if( o != null ){
+				assert o instanceof Boolean;
 				v = (Boolean)o ? "Yes" : "No";
 			}
 			field.getModel().setSelectedItem(v);
@@ -1764,9 +1701,9 @@ public class MetadataEditPane {
 
 	private void objectToField(JSpinner field, Object o) {
 		if (o instanceof Integer) {
-			field.setValue((Integer) o);
+			field.setValue(o);
 		} else if (o == null) {
-			field.setValue((Integer) 0);
+			field.setValue(0);
 		} else {
 			RuntimeException e = new RuntimeException("Cannot store non-Integerr object in JSpinner");
 			e.printStackTrace();
@@ -1776,18 +1713,16 @@ public class MetadataEditPane {
 
 	
 	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					MetadataEditPane pane = new MetadataEditPane();
-					JFrame frame = new JFrame();
-					frame.getContentPane().add(pane.tabbedaPane);
-					frame.setVisible(true);
-					frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-					frame.setSize(640, 480);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+		EventQueue.invokeLater(() -> {
+			try {
+				MetadataEditPane pane = new MetadataEditPane();
+				JFrame frame = new JFrame();
+				frame.getContentPane().add(pane.tabbedaPane);
+				frame.setVisible(true);
+				frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+				frame.setSize(640, 480);
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
 		});
 	}

@@ -30,8 +30,8 @@ public class WindowsRegisterContextMenu {
 
 	public static String pdfFileType(boolean create){
 		String pdfFileType = null ;
-		if (false){
-		} else if(hasRegistryKey(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Classes\\.pdf")){
+
+		if(hasRegistryKey(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Classes\\.pdf")){
 			pdfFileType = Advapi32Util.registryGetStringValue( WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Classes\\.pdf", "");
 		} else if(hasRegistryKey(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Classes\\.pdf")){
 			pdfFileType = Advapi32Util.registryGetStringValue( WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Classes\\.pdf", "");
@@ -42,11 +42,7 @@ public class WindowsRegisterContextMenu {
 		}
 		return pdfFileType;
 	}
-	
-	public static String applicationKey(){
-		return "SOFTWARE\\Classes\\PdfMetadataEditor";
-	}
-	
+
 	public static String editCmdShellKey(String pdfFileType){
 		return "SOFTWARE\\Classes\\" + pdfFileType + "\\shell\\PME1.Edit.File";		
 	}
@@ -98,16 +94,16 @@ public class WindowsRegisterContextMenu {
 		try {
 			Advapi32Util.registrySetStringValue(root, keyPath, name, value);			
 		} catch(com.sun.jna.platform.win32.Win32Exception e){
-			System.out.println(e);
+			System.out.println(e.toString());
 		}
 	}
 
-	public static void deleteRegistryKey(com.sun.jna.platform.win32.WinReg.HKEY root, String key){
+	public static void deleteRegistryKey(String key){
 		System.out.println("Registry Delete: " + key);
 		try {
 			Advapi32Util.registryDeleteKey(WinReg.HKEY_CURRENT_USER, key);			
 		} catch(com.sun.jna.platform.win32.Win32Exception e){
-			System.out.println(e);
+			System.out.println(e.toString());
 		}
 	}
 	
@@ -159,10 +155,10 @@ public class WindowsRegisterContextMenu {
 			String shellDdeExecKey = shellKey +"\\ddeexec";
 			String shellDdeExecApplicationKey = shellDdeExecKey +"\\application";
 
-			deleteRegistryKey(WinReg.HKEY_CURRENT_USER, shellDdeExecApplicationKey);			
-			deleteRegistryKey(WinReg.HKEY_CURRENT_USER, shellDdeExecKey);
-			deleteRegistryKey(WinReg.HKEY_CURRENT_USER, shellCommandKey);
-			deleteRegistryKey(WinReg.HKEY_CURRENT_USER, shellKey);
+			deleteRegistryKey(shellDdeExecApplicationKey);
+			deleteRegistryKey(shellDdeExecKey);
+			deleteRegistryKey(shellCommandKey);
+			deleteRegistryKey(shellKey);
 
 			// Batch commands
 			for(CommandDescription desc:  CommandDescription.batchCommands){
@@ -171,13 +167,13 @@ public class WindowsRegisterContextMenu {
 				String batchShellDdeExecKey = batchShellKey +"\\ddeexec";
 				String batchShellDdeExecApplicationKey = batchShellKey +"\\application";
 
-				deleteRegistryKey(WinReg.HKEY_CURRENT_USER, batchShellDdeExecApplicationKey);
-				deleteRegistryKey(WinReg.HKEY_CURRENT_USER, batchShellDdeExecKey);
-				deleteRegistryKey(WinReg.HKEY_CURRENT_USER, batchShellCommandKey);
-				deleteRegistryKey(WinReg.HKEY_CURRENT_USER, batchShellKey);
+				deleteRegistryKey(batchShellDdeExecApplicationKey);
+				deleteRegistryKey(batchShellDdeExecKey);
+				deleteRegistryKey(batchShellCommandKey);
+				deleteRegistryKey(batchShellKey);
 			}
-			deleteRegistryKey(WinReg.HKEY_CURRENT_USER, batchMenuShellKey(pdfFileType));
-			deleteRegistryKey(WinReg.HKEY_CURRENT_USER, batchMenuKey(pdfFileType));
+			deleteRegistryKey(batchMenuShellKey(pdfFileType));
+			deleteRegistryKey(batchMenuKey(pdfFileType));
 		}
 	}
 	
@@ -186,14 +182,14 @@ public class WindowsRegisterContextMenu {
 			System.out.println("Specify register or unregister as first argument");
 			return;
 		}
-		if(args[0].toLowerCase().equals("register")){
+		if(args[0].equalsIgnoreCase("register")){
 			try {
 				register();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
-		if(args[0].toLowerCase().equals("unregister")){
+		if(args[0].equalsIgnoreCase("unregister")){
 			try {
 				unregister();
 			} catch (Exception e) {

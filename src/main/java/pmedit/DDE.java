@@ -1,3 +1,4 @@
+/*
 package pmedit;
 
 import java.util.ArrayList;
@@ -23,7 +24,7 @@ public class DDE {
 //    		Main.logLine("DDE.init","Using launger DDE!");
 //    		return;
 //    	}
-//	
+//
 //		try {
 //		    DDEServer server = new DDEServer(SERVICE) {
 //		        @Override
@@ -32,14 +33,14 @@ public class DDE {
 //		            Main.logLine("DDEServer","isTopicSupported(" + topicName + ")");
 //		            return TOPIC.equalsIgnoreCase(topicName);
 //		        }
-//		
+//
 //		        @Override
 //		        protected boolean isItemSupported(String topic, String item, int uFmt)
 //		        {
 //		            Main.logLine("DDEServer","isItemSupported(" + topic +"," + item + "," + uFmt + ")");
 //		            return true;
 //		        }
-//		
+//
 //		        @Override
 //		        protected boolean onExecute(String command)
 //		        {
@@ -51,36 +52,36 @@ public class DDE {
 //		            }
 //		            return true;
 //		        }
-//		
+//
 //		        @Override
 //		        protected boolean onPoke(String topic, String item, String data)
 //		        {
 //		            Main.logLine("DDEServer","onPoke(" + topic + ", " + item + ", " + data + ")");
-//		
+//
 //		            return true;
 //		        }
-//		
+//
 //		        @Override
 //		        protected boolean onPoke(String topic, String item, byte[] data, int uFmt)
 //		        {
 //		            Main.logLine("DDEServer","onPoke(" +topic + ", " + item + ", " + data + ", " + uFmt + ")");
-//		
+//
 //		            return false; // we do not support it
 //		        }
-//		
+//
 //		        @Override
 //		        protected String onRequest(String topic, String item)
 //		        {
 //		        	Main.logLine("DDEServer","onRequest(" + topic + ", " + item + ")");
-//		
+//
 //		            return item;
 //		        }
-//		
+//
 //		        @Override
 //		        protected byte[] onRequest(String topic, String item, int uFmt)
 //		        {
 //		        	Main.logLine("DDEServer","onPoke(" + topic + ", " + item + ", " + uFmt + ")");
-//		
+//
 //		            return null; // we do not support it
 //		        }
 //			};
@@ -93,14 +94,14 @@ public class DDE {
 //        	Main.logLine("DDEServer Exception", e.toString());
 //		}
 	}
-    
-	
+
+
 	static DdeEvent handler;
-	
+
 	public static void addHandler(DdeEvent newHandler){
 		handler = newHandler;
 	}
-	
+
     public static void execute(String command) {
     	Main.logLine("DDE execute:", command);
     	if( handler != null){
@@ -157,5 +158,6 @@ public class DDE {
 		}
 		return rval;
 	}
-    
+
 }
+*/

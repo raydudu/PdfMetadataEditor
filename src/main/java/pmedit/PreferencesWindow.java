@@ -42,7 +42,6 @@ import net.miginfocom.swing.MigLayout;
 
 public class PreferencesWindow extends JDialog {
 
-	private JPanel contentPane;
 	public MetadataEditPane defaultMetadataPane;
 
 	public boolean copyBasicToXmp;
@@ -100,7 +99,7 @@ public class PreferencesWindow extends JDialog {
 		});
 		setTitle("Preferences");
 		setMinimumSize(new Dimension(640, 480));
-		contentPane = new JPanel();
+		JPanel contentPane = new JPanel();
 		setContentPane(contentPane);
 
 		GridBagLayout gbl_contentPane = new GridBagLayout();

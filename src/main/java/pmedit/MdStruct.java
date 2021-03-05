@@ -7,15 +7,17 @@ import java.lang.annotation.RetentionPolicy;
 public @interface MdStruct {
 	String name() default "";
 
-	public enum StructType {
+	enum StructType {
 		MdStruct,
 		MdEnableStruct,
-	};
+	}
+
 	StructType type() default StructType.MdStruct;
 
-	public enum Access {
+	enum Access {
 		ReadOnly,
 		ReadWrite,
-	};
+	}
+
 	Access access() default Access.ReadWrite;
 }

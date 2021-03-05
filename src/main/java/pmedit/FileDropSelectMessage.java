@@ -21,10 +21,6 @@ public class FileDropSelectMessage extends JComponent {
 	
 	static String openFilesText = "Open file(s)";
 	static String batchOperationText = "Batch operation";
-	
-	public boolean isOpenFile() {
-		return isOpenFile;
-	}
 
 	public boolean isBatchOperation() {
 		return isBatchOperation;
@@ -32,6 +28,7 @@ public class FileDropSelectMessage extends JComponent {
 
 	boolean isOpenFile = false, isBatchOperation = false;
 	
+	@SuppressWarnings("IntegerDivisionInFloatingPointContext")
 	protected void paintComponent(Graphics g1) {
     	Graphics2D g = (Graphics2D)g1;
     	Dimension d = getSize();

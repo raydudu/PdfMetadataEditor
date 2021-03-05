@@ -14,10 +14,7 @@ public class PdfFilter extends FileFilter {
 		String fn = f.getName();
 		String ext  = fn.substring(fn.lastIndexOf('.') + 1);
 		//System.out.println(ext);
-		if(ext.equalsIgnoreCase("pdf")){
-			return true;
-		}
-		return false;
+		return ext.equalsIgnoreCase("pdf");
 	}
 
 	@Override

@@ -199,8 +199,8 @@ public class Main {
 //    catch (InstantiationException e) {}
 //    catch (IllegalAccessException e) {}
 	   executeCommand(cmdLine);
-	   DDE.init();
-	   Main.logLine("DDE:", "DONE");
+//	   DDE.init();
+//	   Main.logLine("DDE:", "DONE");
 	   CommandsExecutor commandsExecutor = new CommandsExecutor();
 	   commandsExecutor.execute();
 

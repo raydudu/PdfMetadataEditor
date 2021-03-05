@@ -4,11 +4,11 @@ import java.util.List;
 
 
 public class TemplateString {
-	public static interface Entity {
-		public String get(MetadataInfo md);
-		public boolean shrinkable();
-	};
-	
+	public interface Entity {
+		String get(MetadataInfo md);
+		boolean shrinkable();
+	}
+
 	public static class Variable implements Entity{
 		String name;
 
@@ -49,8 +49,8 @@ public class TemplateString {
 	String template;
 	List<Entity> entityList ;
 	
-	public TemplateString(String template, int maxOutputLenght){
-		length = maxOutputLenght;
+	public TemplateString(String template, int maxOutputLength){
+		length = maxOutputLength;
 		this.template = template;
 	}
 
@@ -59,7 +59,7 @@ public class TemplateString {
 	}
 	
 	public void parse(){
-		entityList = new ArrayList<Entity>();
+		entityList = new ArrayList<>();
 		if (template == null)
 			return;
 		int idx = 0;
@@ -87,8 +87,8 @@ public class TemplateString {
 	public String process(MetadataInfo md){
 		if(entityList ==null)
 			parse();
-		ArrayList<String> chunks = new ArrayList<String>();
-		ArrayList<Integer> resizable = new ArrayList<Integer>();
+		ArrayList<String> chunks = new ArrayList<>();
+		ArrayList<Integer> resizable = new ArrayList<>();
 		int outSize=0;
 		for(int i=0; i< entityList.size(); ++i){
 			Entity e = entityList.get(i);
@@ -103,7 +103,7 @@ public class TemplateString {
 			for(Integer i: resizable){
 				shirinkableSize += chunks.get(i).length();
 			}
-			float shrinkCoef[] = new float[chunks.size()];
+			float[] shrinkCoef = new float[chunks.size()];
 			for(Integer i: resizable){
 				shrinkCoef[i] = ((float)chunks.get(i).length())/shirinkableSize;
 			}

@@ -1,7 +1,8 @@
 package pmedit;
 
-/**
- * helper class to check the operating system this Java VM runs in
+import java.util.Locale;
+
+/** helper class to check the operating system this Java VM runs in
  *
  * please keep the notes below as a pseudo-license
  *
@@ -9,14 +10,13 @@ package pmedit;
  * compare to http://svn.terracotta.org/svn/tc/dso/tags/2.6.4/code/base/common/src/com/tc/util/runtime/Os.java
  * http://www.docjar.com/html/api/org/apache/commons/lang/SystemUtils.java.html
  */
-import java.util.Locale;
 public final class OsCheck {
   /**
    * types of Operating Systems
    */
   public enum OSType {
     Windows, MacOS, Linux, Other
-  };
+  }
 
   // cached result of OS detection
   protected static OSType detectedOS;
@@ -25,16 +25,16 @@ public final class OsCheck {
    * detect the operating system from the os.name System property and cache
    * the result
    * 
-   * @returns - the operating system detected
+   * @return - the operating system detected
    */
   public static OSType getOperatingSystemType() {
     if (detectedOS == null) {
       String OS = System.getProperty("os.name", "generic").toLowerCase(Locale.ENGLISH);
-      if ((OS.indexOf("mac") >= 0) || (OS.indexOf("darwin") >= 0)) {
+      if ((OS.contains("mac")) || (OS.contains("darwin"))) {
         detectedOS = OSType.MacOS;
-      } else if (OS.indexOf("win") >= 0) {
+      } else if (OS.contains("win")) {
         detectedOS = OSType.Windows;
-      } else if (OS.indexOf("nux") >= 0) {
+      } else if (OS.contains("nux")) {
         detectedOS = OSType.Linux;
       } else {
         detectedOS = OSType.Other;
@@ -42,8 +42,5 @@ public final class OsCheck {
     }
     return detectedOS;
   }
-  
-  public static boolean isWindows(){
-	  return getOperatingSystemType() == OSType.Windows;
-  }
+
 }

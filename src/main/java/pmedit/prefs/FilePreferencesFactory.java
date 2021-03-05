@@ -1,7 +1,6 @@
 package pmedit.prefs;
 
 import java.io.File;
-import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 import java.util.prefs.PreferencesFactory;
 
@@ -18,7 +17,6 @@ import java.util.prefs.PreferencesFactory;
  * @version $Id: FilePreferencesFactory.java 282 2009-06-18 17:05:18Z david $
  */
 public class FilePreferencesFactory implements PreferencesFactory {
-	private static final Logger log = Logger.getLogger(FilePreferencesFactory.class.getName());
 
 	Preferences rootPreferences;
 	public static final String SYSTEM_PROPERTY_FILE = "pmedit.prefs.FilePreferencesFactory.file";
@@ -37,6 +35,7 @@ public class FilePreferencesFactory implements PreferencesFactory {
 
 	private static File preferencesFile;
 
+	@SuppressWarnings("ResultOfMethodCallIgnored")
 	public static File getPreferencesFile() {
 		if (preferencesFile == null) {
 			String prefsFile = System.getProperty(SYSTEM_PROPERTY_FILE);

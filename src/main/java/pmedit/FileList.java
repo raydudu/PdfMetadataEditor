@@ -10,7 +10,6 @@ import java.nio.file.PathMatcher;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -19,7 +18,7 @@ public class FileList {
 
 	static class Finder extends SimpleFileVisitor<Path> {
 		private final PathMatcher matcher;
-		List<File> fileList = new ArrayList<File>();
+		List<File> fileList = new ArrayList<>();
 
 		Finder(String pattern) {
 			matcher = FileSystems.getDefault().getPathMatcher("glob:" + pattern);
@@ -52,14 +51,14 @@ public class FileList {
 
 		@Override
 		public FileVisitResult visitFileFailed(Path file, IOException exc) {
-			System.err.println(exc);
+			System.err.println(exc.toString());
 			return FileVisitResult.CONTINUE;
 		}
 	}
 
-	static Pattern isGlob = Pattern.compile("[\\[\\]\\{\\}\\*\\?]");
+	static Pattern isGlob = Pattern.compile("[\\[\\]{}*?]");
 	public static List<File> fileList(List<String> fileNames) {
-		ArrayList<File> rval = new ArrayList<File>();
+		ArrayList<File> rval = new ArrayList<>();
 
 		for (String fileName : fileNames) {
 			File file = new File(fileName);
@@ -74,7 +73,7 @@ public class FileList {
 				try {
 					Files.walkFileTree(new File(dir).toPath(), finder);
 				} catch (IOException e) {
-					System.err.println(e);
+					System.err.println(e.toString());
 				}
 				rval.addAll(finder.fileList);
 			} else {
@@ -82,10 +81,6 @@ public class FileList {
 			}
 		}
 		return rval;
-	}
-
-	public static List<File> fileList(String[] fileNames) {
-		return fileList(Arrays.asList(fileNames));
 	}
 
 }

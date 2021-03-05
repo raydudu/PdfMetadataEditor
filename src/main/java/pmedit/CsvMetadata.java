@@ -11,7 +11,7 @@ import com.opencsv.CSVReader;
 public class CsvMetadata {
 
 	public static List<MetadataInfo> readFile(File filename) throws Exception{
-		ArrayList<MetadataInfo> parsed = new ArrayList<MetadataInfo>();
+		ArrayList<MetadataInfo> parsed = new ArrayList<>();
 		CSVReader reader = new CSVReader(new FileReader(filename));
 	    List<String[]> entries = reader.readAll();
 	    reader.close();

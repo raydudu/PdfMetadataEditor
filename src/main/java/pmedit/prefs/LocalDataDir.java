@@ -12,22 +12,13 @@ import pmedit.OsCheck;
 public class LocalDataDir {
 	
 	public static String get(){
-		String dir;
-		switch (OsCheck.getOperatingSystemType()) {
-		    case Windows:
-		    	dir =getWindows();
-		    	break;
-		    case MacOS:
-		    	dir = getMacos();
-		    	break;
-		    case Linux:
-		    	dir = getLinux();
-		    	break;
-		    default:
-		    	dir = "";
-		    	break;
-		}
-		
+		String dir = switch (OsCheck.getOperatingSystemType()) {
+			case Windows -> getWindows();
+			case MacOS -> getMacos();
+			case Linux -> getLinux();
+			default -> "";
+		};
+
 		if( dir.length() > 0 && !dir.endsWith(File.separator) ){
 			dir = dir + File.separator;
 		}
@@ -40,15 +31,10 @@ public class LocalDataDir {
 		String dir = "";
 		try {
 		 dir = Shell32Util.getKnownFolderPath(GUID.fromString(FOLDERID_APPDATA));
-		} catch(Win32Exception e){
+		} catch(Win32Exception | UnsatisfiedLinkError e){
 			try {
 				dir = Shell32Util.getFolderPath(ShlObj.CSIDL_APPDATA);
-			}  catch (Exception e1) {
-			}
-		} catch(UnsatisfiedLinkError e){
-			try {
-				dir = Shell32Util.getFolderPath(ShlObj.CSIDL_APPDATA);
-			}  catch (Exception e1) {
+			}  catch (Exception ignored) {
 			}
 		}
 		return dir;

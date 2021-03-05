@@ -1,27 +1,20 @@
 package pmedit;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import java.io.File;
-import java.io.IOException;
-import java.math.BigInteger;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Random;
-
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
 import pmedit.MetadataInfo.FieldDescription;
+
+import java.io.File;
+import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.util.*;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class MetadataInfoTest {
 	static int NUM_FILES = 5;
@@ -37,22 +30,19 @@ public class MetadataInfoTest {
 	
 	public static File emptyPdf() throws Exception{
 		File temp = File.createTempFile("test-file", ".pdf");
-        PDDocument doc = new PDDocument();
-        try {
-            // a valid PDF document requires at least one page
-            PDPage blankPage = new PDPage();
-            doc.addPage(blankPage);
-            doc.save(temp);
-        } finally {
-            doc.close();
-        }
+		try (PDDocument doc = new PDDocument()) {
+			// a valid PDF document requires at least one page
+			PDPage blankPage = new PDPage();
+			doc.addPage(blankPage);
+			doc.save(temp);
+		}
         temp.deleteOnExit();
         return temp;
 	}
 
 	public static File csvFile(List<String> lines) throws Exception{
 		File temp = File.createTempFile("test-csv", ".csv");
-		Files.write(temp.toPath(), lines, Charset.forName("UTF-8"));
+		Files.write(temp.toPath(), lines, StandardCharsets.UTF_8);
 		temp.deleteOnExit();
         return temp;
 	}
@@ -61,14 +51,13 @@ public class MetadataInfoTest {
 	public static List<PMTuple> randomFiles(int numFiles) throws Exception{
 		List<String> fields = MetadataInfo.keys();
 		int numFields = fields.size();
-		List<PMTuple> rval = new ArrayList<MetadataInfoTest.PMTuple>();
+		List<PMTuple> rval = new ArrayList<>();
 		
 		Random rand = new Random();
 		for(int i=0; i<numFiles; ++i) {
 			MetadataInfo md = new MetadataInfo();
 			//int genFields = rand.nextInt(numFields);
-			int genFields = numFields;
-			for(int j=0; j< genFields; ++j){
+			for(int j = 0; j< numFields; ++j){
 				String field = fields.get(rand.nextInt(numFields));
 				// 	ignore file fields as they are read only
 				if(field.startsWith("file.")) {
@@ -80,7 +69,7 @@ public class MetadataInfoTest {
 					continue;
 				}
 				FieldDescription fd = MetadataInfo.getFieldDescription(field); 
-				switch(fd.type){
+				switch(Objects.requireNonNull(fd).type){
 				case LongField:
 					md.setAppend(field, (long)rand.nextInt(1000));
 					break;
@@ -88,7 +77,7 @@ public class MetadataInfoTest {
 					md.setAppend(field, rand.nextInt(1000));
 					break;
 				case BoolField:
-					md.setAppend(field, ((rand.nextInt(1000) & 1) == 1) ? true : false);
+					md.setAppend(field, (rand.nextInt(1000) & 1) == 1);
 					break;
 				case DateField:
 					Calendar cal = Calendar.getInstance();
@@ -108,11 +97,11 @@ public class MetadataInfoTest {
 	}
 	
 	@Before
-	public void setUp() throws Exception {
+	public void setUp() {
 	}
 
 	@After
-	public void tearDown() throws Exception {
+	public void tearDown() {
 	}
 
 	@Test
@@ -144,7 +133,7 @@ public class MetadataInfoTest {
 	}
 	
 	@Test
-	public void testEmptyLoad() throws Exception, IOException, Exception{
+	public void testEmptyLoad() throws Exception{
 		MetadataInfo md = new MetadataInfo();
 		md.loadFromPDF(emptyPdf());
 		assertTrue(md.isEquivalent(new MetadataInfo()));

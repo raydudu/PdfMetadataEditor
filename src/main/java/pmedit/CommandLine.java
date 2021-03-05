@@ -21,7 +21,7 @@ public class CommandLine {
 	public static String mdFieldsHelpMessage(int lineLen, String pre, String post, boolean markReadOnly){
 		int maxLen=0;
 		for(String s: validMdNames){
-			int additionalLength =  ( markReadOnly && !MetadataInfo.keyIsWritable(s) ? 1 : 0);
+			int additionalLength =  ( markReadOnly && MetadataInfo.keyIsWritable(s) ? 1 : 0);
 			if(s.length() + additionalLength > maxLen){
 				maxLen = s.length() +  post.length() + additionalLength;
 			}
@@ -30,7 +30,7 @@ public class CommandLine {
 		StringBuilder sb = new StringBuilder();
 		for(String s: validMdNames){
 			sb.append(pre);
-			sb.append(String.format("%1$-" + maxLen + "s",s + ( markReadOnly && !MetadataInfo.keyIsWritable(s) ? "*" : "") + post ));
+			sb.append(String.format("%1$-" + maxLen + "s",s + ( markReadOnly && MetadataInfo.keyIsWritable(s) ? "*" : "") + post ));
 			ll += maxLen + pre.length();
 			if(ll >= lineLen){
 				sb.append('\n');
@@ -43,8 +43,8 @@ public class CommandLine {
 		return sb.toString();
 	}
 	
-	static Set<String> validMdNames = new LinkedHashSet<String>(MetadataInfo.keys());
-	public List<String> fileList = new ArrayList<String>();
+	static Set<String> validMdNames = new LinkedHashSet<>(MetadataInfo.keys());
+	public List<String> fileList = new ArrayList<>();
 	
 	public boolean noGui = System.getProperty("noGui") != null;
 	public CommandDescription command;
@@ -87,8 +87,8 @@ public class CommandLine {
 		return command != null;
 	}
 
-	protected static int processOptions(int startIndex, List<String> args, CommandLine cmdLine) throws ParseError{
-		int i = startIndex;
+	protected static int processOptions(List<String> args, CommandLine cmdLine) throws ParseError{
+		int i = 0;
 		while( (i < args.size()) && args.get(i).startsWith("-") ){
 			String arg = args.get(i).startsWith("--")? args.get(i).substring(2) : args.get(i).substring(1);
 			if(arg.equalsIgnoreCase("nogui") || arg.equalsIgnoreCase("console") ){
@@ -132,7 +132,7 @@ public class CommandLine {
 	public static CommandLine parse(List<String> args) throws ParseError{
 		CommandLine cmdLine = new CommandLine();
 		cmdLine.params.metadata.setEnabled(false);
-		int i = processOptions(0, args, cmdLine);
+		int i = processOptions(args, cmdLine);
 		if(i < args.size()){
 			cmdLine.command = CommandDescription.getBatchCommand(args.get(i));
 			if( cmdLine.command != null) {

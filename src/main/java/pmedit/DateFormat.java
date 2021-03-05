@@ -9,7 +9,7 @@ import pmedit.CommandLine.ParseError;
 
 public class DateFormat {
     
-	private static final SimpleDateFormat isoDateFormat[] = new SimpleDateFormat[]{
+	private static final SimpleDateFormat[] isoDateFormat = new SimpleDateFormat[]{
     		new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"),
       		new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss"),
       		new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"),
@@ -28,7 +28,7 @@ public class DateFormat {
 		for(SimpleDateFormat df:isoDateFormat){
 			try {
 				d = df.parse(value);
-			} catch (ParseException e) {
+			} catch (ParseException ignored) {
 			}
 		}
 		if(d != null){
@@ -37,11 +37,6 @@ public class DateFormat {
 			  return cal;
 		}
 		throw new CommandLine.ParseError("Invalid date format: "+ value);
-	}
-	
-	public static String formatDate(Calendar cal) {
-		return isoDateFormat[3].format(cal.getTime());
-		
 	}
 
 	public static String formatDateTime(Calendar cal) {

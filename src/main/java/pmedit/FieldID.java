@@ -6,13 +6,14 @@ import java.lang.annotation.RetentionPolicy;
 
 public @interface FieldID {
 	String value();
-	public enum FieldType {
+	enum FieldType {
 		StringField,
 		TextField,
 		LongField,
 		IntField,
 		DateField,
 		BoolField
-	};
+	}
+
 	FieldType type() default FieldType.StringField;
 }
