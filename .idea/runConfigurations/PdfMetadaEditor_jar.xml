@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="PdfMetadaEditor.jar" type="JarApplication">
-    <option name="JAR_PATH" value="$PROJECT_DIR$/out/artifacts/PdfMetadaEditor/PdfMetadaEditor.jar" />
+    <option name="JAR_PATH" value="$PROJECT_DIR$/PdfMetadaEditor.jar" />
     <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
     <option name="ALTERNATIVE_JRE_PATH" />
     <method v="2">

@@ -241,7 +241,7 @@ public class PreferencesWindow extends JDialog {
 		defaultMetadataPane = new MetadataEditPane();
 
 		panelDefaults.add(defaultMetadataPane.tabbedaPane, gbc_lblDefineHereDefault1);
-
+/*
 		JPanel panelOsIntegration = new JPanel();
 		tabbedPane.addTab("Os Integration", null, panelOsIntegration, null);
 		panelOsIntegration.setLayout(new MigLayout("", "[grow]", "[grow]"));
@@ -281,7 +281,7 @@ public class PreferencesWindow extends JDialog {
 
 		btnRegister.setEnabled(isWindows);
 		btnUnregister.setEnabled(isWindows);
-
+*/
 		JScrollPane scrollPane_1 = new JScrollPane();
 		tabbedPane.addTab("About", null, scrollPane_1, null);
 
@@ -373,10 +373,10 @@ public class PreferencesWindow extends JDialog {
 		} else {
 			rdbtnSave.setSelected(true);
 		}
-
+/*
 		SwingUtilities.invokeLater(() -> lblNewLabel_1
 				.setIcon(new ImageIcon(PreferencesWindow.class.getResource("/pmedit/os_integration_hint.png"))));
-
+*/
 		load();
 		refresh();
 		contentPane.doLayout();

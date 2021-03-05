@@ -1,3 +1,4 @@
+/*
 package pmedit;
 
 import java.io.File;
@@ -12,7 +13,7 @@ public class WindowsRegisterContextMenu {
 		String thisJarDir;
 		try {
 			thisJarDir = new File(PreferencesWindow.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath()).getParentFile().getAbsolutePath();
-			
+
 		} catch (URISyntaxException e) {
 			throw new Exception("Cannot find the path to current jar");
 		}
@@ -26,7 +27,7 @@ public class WindowsRegisterContextMenu {
 		}
 		throw new Exception("Cannot find the path to current exe");
 	}
-	
+
 
 	public static String pdfFileType(boolean create){
 		String pdfFileType = null ;
@@ -44,21 +45,21 @@ public class WindowsRegisterContextMenu {
 	}
 
 	public static String editCmdShellKey(String pdfFileType){
-		return "SOFTWARE\\Classes\\" + pdfFileType + "\\shell\\PME1.Edit.File";		
+		return "SOFTWARE\\Classes\\" + pdfFileType + "\\shell\\PME1.Edit.File";
 	}
 
 	public static String batchMenuShellKey(String pdfFileType){
-		return "SOFTWARE\\Classes\\" + pdfFileType + "\\shell\\PME2.Batch.Menu";		
+		return "SOFTWARE\\Classes\\" + pdfFileType + "\\shell\\PME2.Batch.Menu";
 	}
 
 	public static String batchMenuKey(String pdfFileType){
-		return "SOFTWARE\\Classes\\" + pdfFileType + "\\Batch.Menu";		
+		return "SOFTWARE\\Classes\\" + pdfFileType + "\\Batch.Menu";
 	}
 
 	public static String batchCmdShellKey(String pdfFileType){
-		return batchMenuKey(pdfFileType) + "\\shell";		
+		return batchMenuKey(pdfFileType) + "\\shell";
 	}
-	
+
 	public static void createRegistryKey(String keyToCreate){
 		String[] keys = keyToCreate.split("\\\\");
 		String current = "";
@@ -69,7 +70,7 @@ public class WindowsRegisterContextMenu {
 			}
 			current += "\\";
 		}
-		
+
 	}
 
 	public static boolean hasRegistryKey(com.sun.jna.platform.win32.WinReg.HKEY root, String keyToCreate){
@@ -92,7 +93,7 @@ public class WindowsRegisterContextMenu {
 	public static void setRegistryKey(com.sun.jna.platform.win32.WinReg.HKEY root, String keyPath, String name, String value){
 		System.out.println("Registry Create: " + keyPath + "(" + name + ")=" +value);
 		try {
-			Advapi32Util.registrySetStringValue(root, keyPath, name, value);			
+			Advapi32Util.registrySetStringValue(root, keyPath, name, value);
 		} catch(com.sun.jna.platform.win32.Win32Exception e){
 			System.out.println(e.toString());
 		}
@@ -101,17 +102,17 @@ public class WindowsRegisterContextMenu {
 	public static void deleteRegistryKey(String key){
 		System.out.println("Registry Delete: " + key);
 		try {
-			Advapi32Util.registryDeleteKey(WinReg.HKEY_CURRENT_USER, key);			
+			Advapi32Util.registryDeleteKey(WinReg.HKEY_CURRENT_USER, key);
 		} catch(com.sun.jna.platform.win32.Win32Exception e){
 			System.out.println(e.toString());
 		}
 	}
-	
+
 
 	public static void register() throws Exception{
 			String pdfFileType = pdfFileType(true);
 
-			
+
 			String exePath = "\"" + exePath() + "\"";
 			String shellKey = editCmdShellKey(pdfFileType);
 			String shellCommandKey = shellKey +"\\command";
@@ -125,7 +126,7 @@ public class WindowsRegisterContextMenu {
 			setRegistryKey(WinReg.HKEY_CURRENT_USER, shellCommandKey, "", exePath );
 			setRegistryKey(WinReg.HKEY_CURRENT_USER, shellDdeExecKey, "", "\"%1\"");
 			setRegistryKey(WinReg.HKEY_CURRENT_USER, shellDdeExecApplicationKey, "", "PdfMetadataEditor");
-			
+
 			// Add batch commands
 			String batchMenuShellKey = batchMenuShellKey(pdfFileType);
 			createRegistryKey(batchMenuShellKey);
@@ -146,7 +147,7 @@ public class WindowsRegisterContextMenu {
 				setRegistryKey(WinReg.HKEY_CURRENT_USER, batchShellDdeExecApplicationKey, "", "PdfMetadataEditor");
 			}
 	}
-	
+
 	public static void unregister() {
 		String pdfFileType = pdfFileType(false);
 		if(pdfFileType != null){
@@ -176,7 +177,7 @@ public class WindowsRegisterContextMenu {
 			deleteRegistryKey(batchMenuKey(pdfFileType));
 		}
 	}
-	
+
 	public static void main(String[] args) {
 		if(args.length == 0 ){
 			System.out.println("Specify register or unregister as first argument");
@@ -199,3 +200,4 @@ public class WindowsRegisterContextMenu {
 	}
 
 }
+*/

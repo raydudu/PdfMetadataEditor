@@ -30,8 +30,8 @@ public class MainCli {
 			batch.runCommand(cmdLine.command, FileList.fileList(cmdLine.fileList), status);
 		} else if(cmdLine.batchGui){
 			status.addError("*", "Batch gui command not allowed in console mode");
-		} else { 
-			status.addError("*", "No command specified");
+		} else {
+			System.out.print(helpMessage);
 		}
 	}
 
@@ -43,7 +43,7 @@ public class MainCli {
 		}
 	}
 	
-	static String helpMessage = 
+	static String helpMessage =
 			"Usage pmedit-cli [OPTIONS] COMMAND [METADATA FIELD(S)] file [files...]\n" +
 			"\n" +
 			"OPTIONS\n" +
