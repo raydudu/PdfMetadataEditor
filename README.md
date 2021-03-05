@@ -1,6 +1,6 @@
 # Pdf Metadata Editor
 
-Forked from [zaro/pdf-metadata-editor](git@github.com:zaro/pdf-metadata-editor.git)
+Forked from [zaro/pdf-metadata-editor](https://github.com/zaro/pdf-metadata-editor)  
 Prebuilt installer of the original version can be found [here](http://broken-by.me/pdf-metadata-editor/)
 
 
