@@ -6,33 +6,28 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.List;
+import java.util.Objects;
 
 public class PDFMetadataEditBatch {
 
 	BatchOperationParameters params;
-	
-	public PDFMetadataEditBatch() {
-		this(null);
-	}
-	
+
 	public PDFMetadataEditBatch(BatchOperationParameters params){
 		this.params = params;
 	}
 	
-	/**
-	 * @param args
-	 */
 	public interface ActionStatus {
-		public void addStatus(String filename, String message);
-		public void addError(String filename, String error);
+		void addStatus(String filename, String message);
+		void addError(String filename, String error);
 	}
 	
 	interface FileAction {
-		public void apply(File file);
-		public void ignore(File file);
-	};
+		void apply(File file);
+		void ignore(File file);
+	}
 	
 	public void forFiles(File file, FileFilter filter, FileAction action){
 		if(file.isFile()){
@@ -42,7 +37,7 @@ public class PDFMetadataEditBatch {
 				action.ignore(file);
 			}
 		} else if( file.isDirectory() ){
-			for(File f:file.listFiles(filter)){
+			for(File f: Objects.requireNonNull(file.listFiles(filter))){
 				action.apply(f);
 			}			
 		} else {
@@ -56,20 +51,7 @@ public class PDFMetadataEditBatch {
 		}
 	}
 
-	protected FileFilter defaultFileFilter= new FileFilter() {
-		
-		@Override
-		public boolean accept(File pathname) {
-			if( isPdfExtension( pathname) ){
-				return true;
-			}
-			return false;
-		}
-	};
-	
-	public void forFiles(File file, FileAction action){
-		forFiles(file, defaultFileFilter, action);
-	}
+	protected FileFilter defaultFileFilter= PDFMetadataEditBatch::isPdfExtension;
 
 	public void forFiles(List<File> files, FileAction action){
 		forFiles(files, defaultFileFilter, action);
@@ -194,7 +176,7 @@ public class PDFMetadataEditBatch {
 						outFile = file.getAbsolutePath() + ".json";
 					}
 					Writer out = new BufferedWriter(new OutputStreamWriter(
-							new FileOutputStream(outFile), "UTF8"));
+							new FileOutputStream(outFile), StandardCharsets.UTF_8));
 					out.write(md.toJson(2));
 					out.close();
 					status.addStatus(file.getName(), outFile);
@@ -224,7 +206,7 @@ public class PDFMetadataEditBatch {
 						outFile = file.getAbsolutePath() + ".yaml";
 					}
 					Writer out = new BufferedWriter(new OutputStreamWriter(
-							new FileOutputStream(outFile), "UTF8"));
+							new FileOutputStream(outFile), StandardCharsets.UTF_8));
 					out.write(md.toYAML(true));
 					out.close();
 					status.addStatus(file.getName(), outFile);
@@ -269,9 +251,7 @@ public class PDFMetadataEditBatch {
 
 
 	public void runCommand(CommandDescription command, List<File> batchFileList, ActionStatus actionStatus){
-		if( !BatchMan.hasBatch() ){
-			actionStatus.addError("*", "Invalid license, you can get a license at " + Constants.batchLicenseUrl);
-		} else if( command.is("rename") ){
+		if( command.is("rename") ){
 			rename(batchFileList, actionStatus);
 		} else if( command.is("edit")){
 			edit(batchFileList, actionStatus);

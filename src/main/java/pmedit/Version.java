@@ -34,30 +34,21 @@ public class Version {
     			tag = "dev";
     		}
     	}
-    	
-    	public int cmp(VersionTuple other){
-    		int diff = major - other.major;
-    		if(diff != 0) return diff;
-    		diff = minor - other.minor;
-    		if(diff != 0) return diff;
-    		diff = patch - other.patch;
-       		if(diff != 0) return diff;
-       		return tag.compareToIgnoreCase(other.tag);
-       	}
-    	
-    	public String getAsString(){
-    		return Integer.toString(major) + "." +
-    				Integer.toString(minor) + "." +
-    				Integer.toString(patch) + ((tag.length() >0) ? ("-" + tag) : "");
+
+		public String getAsString(){
+    		return major + "." +
+					minor + "." +
+					patch + ((tag.length() >0) ? ("-" + tag) : "");
     	}
-    };
-    
-    public static VersionTuple get() {
+    }
+
+	public static VersionTuple get() {
     	if( version == null){
         	Properties prop = new Properties();
     		try {
 				prop.load(VersionTuple.class.getClassLoader().getResourceAsStream("pmedit/version.properties"));
 				version = prop.getProperty("app.version", "0.0.0-dev");
+				System.out.println("Version " + version);
 			} catch (IOException e) {
 				e.printStackTrace();
 				version = "0.0.0-dev";

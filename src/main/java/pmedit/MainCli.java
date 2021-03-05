@@ -28,33 +28,18 @@ public class MainCli {
 		if( cmdLine.hasCommand()) {
 			PDFMetadataEditBatch batch = new PDFMetadataEditBatch(cmdLine.params);	
 			batch.runCommand(cmdLine.command, FileList.fileList(cmdLine.fileList), status);
-			return;
 		} else if(cmdLine.batchGui){
 			status.addError("*", "Batch gui command not allowed in console mode");
 		} else { 
 			status.addError("*", "No command specified");
 		}
 	}
-	
-	
 
-	public static void main(CommandLine cmdLine){
-		if(cmdLine.licenseEmail != null && cmdLine.licenseKey != null){
-			if(BatchMan.giveBatch( cmdLine.licenseKey, cmdLine.licenseEmail)) {
-				System.out.println("Installed license for email: " + cmdLine.licenseEmail);
-			} else {
-				System.out.println("Invalid license!");
-			}
-			return;
-		}
-		executeCommand(cmdLine);
-	}
-	
 	public static void main(final String[] args) {
 		try {
-			main(CommandLine.parse(args));
+			executeCommand(CommandLine.parse(args));
 		} catch (ParseError e) {
-			System.err.println(e);
+			System.err.println(e.toString());
 		}
 	}
 	

@@ -7,7 +7,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.Point;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.io.File;
@@ -32,9 +31,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
-import javax.swing.UIManager;
-import javax.swing.event.HyperlinkEvent;
-import javax.swing.event.HyperlinkListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.Style;
@@ -44,25 +40,19 @@ import javax.swing.text.StyledDocument;
 import pmedit.PDFMetadataEditBatch.ActionStatus;
 
 public class BatchOperationWindow extends JFrame {
-	private JTextPane statusText;
-	private ActionListener closeWindowActionListener = new ActionListener() {
-		public void actionPerformed(ActionEvent e) {
-			dispatchEvent(new WindowEvent(BatchOperationWindow.this, WindowEvent.WINDOW_CLOSING));
-		}
-	};
-	private JButton btnAction;
-	private JButton btnCancel;
-	private JScrollPane statusScrollPane;
-	private JTextPane fileList;
-	private JLabel lblStatus;
-	private JScrollPane scrollPane_1;
-	private JComboBox<CommandDescription> selectedBatchOperation;
+	private final JTextPane statusText;
+	private final ActionListener closeWindowActionListener = e -> dispatchEvent(new WindowEvent(BatchOperationWindow.this, WindowEvent.WINDOW_CLOSING));
+	private final JButton btnAction;
+	private final JButton btnCancel;
+	private final JScrollPane statusScrollPane;
+	private final JTextPane fileList;
+	private final JComboBox<CommandDescription> selectedBatchOperation;
 
 	private BatchParametersWindow parametersWindow ;
-	private Map<String, BatchOperationParameters> batchParameters =new HashMap<String, BatchOperationParameters>();
+	private final Map<String, BatchOperationParameters> batchParameters = new HashMap<>();
 
 	
-	List<File> batchFileList = new ArrayList<File>();
+	List<File> batchFileList = new ArrayList<>();
 	
 	final static String LAST_USED_COMMAND_KEY = "lastUsedBatchCommand";
 	public BatchOperationWindow( CommandDescription command) {
@@ -78,13 +68,9 @@ public class BatchOperationWindow extends JFrame {
 		
 		
 		btnParameters = new JButton("Parameters");
-		btnParameters.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				createBatchParametersWindow();
-			}
-		});
+		btnParameters.addActionListener(e -> createBatchParametersWindow());
 		
-				selectedBatchOperation = new JComboBox<CommandDescription>();
+				selectedBatchOperation = new JComboBox<>();
 				GridBagConstraints gbc_selectedBatchOperation = new GridBagConstraints();
 				gbc_selectedBatchOperation.fill = GridBagConstraints.HORIZONTAL;
 				gbc_selectedBatchOperation.insets = new Insets(10, 10, 5, 5);
@@ -93,19 +79,15 @@ public class BatchOperationWindow extends JFrame {
 				gbc_selectedBatchOperation.gridy = 0;
 				getContentPane().add(selectedBatchOperation, gbc_selectedBatchOperation);
 				
-						selectedBatchOperation.addActionListener(new ActionListener() {
-							public void actionPerformed(ActionEvent e) {
-								createBatchParametersWindowButton();
-							}
-						});
+						selectedBatchOperation.addActionListener(e -> createBatchParametersWindowButton());
 		GridBagConstraints gbc_btnParameters = new GridBagConstraints();
 		gbc_btnParameters.anchor = GridBagConstraints.NORTHWEST;
 		gbc_btnParameters.insets = new Insets(10, 0, 5, 10);
 		gbc_btnParameters.gridx = 2;
 		gbc_btnParameters.gridy = 0;
 		getContentPane().add(btnParameters, gbc_btnParameters);
-		
-		scrollPane_1 = new JScrollPane();
+
+		JScrollPane scrollPane_1 = new JScrollPane();
 		GridBagConstraints gbc_scrollPane_1 = new GridBagConstraints();
 		gbc_scrollPane_1.fill = GridBagConstraints.BOTH;
 		gbc_scrollPane_1.insets = new Insets(0, 10, 5, 10);
@@ -118,8 +100,8 @@ public class BatchOperationWindow extends JFrame {
 		fileList.setText("Drop files here to batch process them ...");
 		scrollPane_1.setViewportView(fileList);
 		fileList.setEditable(false);
-		
-		lblStatus = new JLabel("Status");
+
+		JLabel lblStatus = new JLabel("Status");
 		GridBagConstraints gbc_lblStatus = new GridBagConstraints();
 		gbc_lblStatus.anchor = GridBagConstraints.NORTHWEST;
 		gbc_lblStatus.insets = new Insets(0, 10, 5, 10);
@@ -141,42 +123,8 @@ public class BatchOperationWindow extends JFrame {
 		statusScrollPane.setViewportView(statusText);
 		statusText.setEditable(false);
 		
-		        Style estyle = statusText.addStyle("ERROR", null);
-		
-		txtpnnoBatchLicense = new JTextPane();
-		txtpnnoBatchLicense.setEditable(false);
-		txtpnnoBatchLicense.setBackground(UIManager.getColor("Panel.background"));
-		txtpnnoBatchLicense.setContentType("text/html");
-		txtpnnoBatchLicense.setText("<p align=center>No batch license. In order to use batch operations please get a license from <a href='" + Constants.batchLicenseUrl+ "'>" + Constants.batchLicenseUrl+ "<a></p>");
-		GridBagConstraints gbc_txtpnnoBatchLicense = new GridBagConstraints();
-		gbc_txtpnnoBatchLicense.fill = GridBagConstraints.BOTH;
-		gbc_txtpnnoBatchLicense.insets = new Insets(0, 10, 5, 10);
-		gbc_txtpnnoBatchLicense.gridwidth = 3;
-		gbc_txtpnnoBatchLicense.gridx = 0;
-		gbc_txtpnnoBatchLicense.gridy = 4;
-		getContentPane().add(txtpnnoBatchLicense, gbc_txtpnnoBatchLicense);
-		txtpnnoBatchLicense.addHyperlinkListener(new HyperlinkListener() {
-			public void hyperlinkUpdate(HyperlinkEvent e) {
-				if (e.getEventType() != HyperlinkEvent.EventType.ACTIVATED) {
-					return;
-				}
-				if (!java.awt.Desktop.isDesktopSupported()) {
-					return;
-				}
-				java.awt.Desktop desktop = java.awt.Desktop.getDesktop();
-				if (!desktop.isSupported(java.awt.Desktop.Action.BROWSE)) {
-					return;
-				}
+		Style estyle = statusText.addStyle("ERROR", null);
 
-				try {
-					java.net.URI uri = e.getURL().toURI();
-					desktop.browse(uri);
-				} catch (Exception e1) {
-
-				}
-			}
-		});
-		
 		JPanel panel = new JPanel();
 		GridBagConstraints gbc_panel = new GridBagConstraints();
 		gbc_panel.anchor = GridBagConstraints.WEST;
@@ -196,11 +144,7 @@ public class BatchOperationWindow extends JFrame {
 		getContentPane().add(btnCancel, gbc_btnCancel);
 		
 		btnAction = new JButton("Begin");
-		btnAction.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				runBatch();
-			}
-		});
+		btnAction.addActionListener(e -> runBatch());
 		
 				GridBagConstraints gbc_btnAction = new GridBagConstraints();
 				gbc_btnAction.insets = new Insets(0, 0, 10, 10);
@@ -210,9 +154,9 @@ public class BatchOperationWindow extends JFrame {
 				getContentPane().add(btnAction, gbc_btnAction);
 
 		if( command != null){
-			selectedBatchOperation.setModel(new DefaultComboBoxModel<CommandDescription>(new CommandDescription[]{ command }));
+			selectedBatchOperation.setModel(new DefaultComboBoxModel<>(new CommandDescription[]{command}));
 		} else {
-			selectedBatchOperation.setModel(new DefaultComboBoxModel<CommandDescription>(CommandDescription.batchCommands));
+			selectedBatchOperation.setModel(new DefaultComboBoxModel<>(CommandDescription.batchCommands));
 			String lastUsedCommand = Main.getPreferences().get(LAST_USED_COMMAND_KEY, null);
 			if(lastUsedCommand != null){
 				CommandDescription lastCommand = CommandDescription.getBatchCommand(lastUsedCommand);
@@ -250,17 +194,9 @@ public class BatchOperationWindow extends JFrame {
 			}
 		});
 		setGlassPane(new FileDropMessage());
-		if(!BatchMan.hasBatch()){
-			btnAction.setEnabled(false);
-			txtpnnoBatchLicense.setVisible(true);
-		} else {
-			btnAction.setEnabled(true);
-			gridBagLayout.rowHeights[4] = 0;
-			getContentPane().remove(txtpnnoBatchLicense);
-			gridBagLayout.removeLayoutComponent(txtpnnoBatchLicense);
-			txtpnnoBatchLicense = null;
-		}
-		
+		btnAction.setEnabled(true);
+		gridBagLayout.rowHeights[4] = 0;
+
 		java.net.URL imgURL = PDFMetadataEditWindow.class
 				.getResource("pdf-metadata-edit.png");
 		ImageIcon icoImg = new ImageIcon(imgURL);
@@ -269,8 +205,8 @@ public class BatchOperationWindow extends JFrame {
 	
 	
 	boolean hasErrors = false;
-	private JButton btnParameters;
-	private JTextPane txtpnnoBatchLicense;
+	private final JButton btnParameters;
+
 	public void append(String s) {
 	   try {
 	      Document doc = statusText.getDocument();
@@ -296,7 +232,7 @@ public class BatchOperationWindow extends JFrame {
 			  StringWriter sw = new StringWriter();
 			  PrintWriter pw = new PrintWriter(sw);
 			  e.printStackTrace(pw);
-			  sw.toString(); // stack trace as a string		      
+			  //sw.toString(); // stack trace as a string
 			  StyledDocument doc = statusText.getStyledDocument();
 		      doc.insertString(doc.getLength(), sw.toString(), statusText.getStyle("ERROR"));
 		      statusScrollPane.getVerticalScrollBar().setValue(statusScrollPane.getVerticalScrollBar().getMaximum());
@@ -305,25 +241,23 @@ public class BatchOperationWindow extends JFrame {
 		   }
 		}	
 	public void appendFiles(final List<File> files){
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-		
-				if(batchFileList.isEmpty() && files.size() > 0){
-			      Document doc = fileList.getDocument();
-			      try {
-					doc.remove(0, doc.getLength());
-					} catch (BadLocationException e) {}
-				}
-				for(File file:files){
-				   try {
-				      Document doc = fileList.getDocument();
-				      doc.insertString(doc.getLength(), file.getAbsolutePath() +"\n", null);
-				   } catch(BadLocationException exc) {
-				      exc.printStackTrace();
-				   }
-				}
-				batchFileList.addAll(files);
+		SwingUtilities.invokeLater(() -> {
+
+			if(batchFileList.isEmpty() && files.size() > 0){
+			  Document doc = fileList.getDocument();
+			  try {
+				doc.remove(0, doc.getLength());
+				} catch (BadLocationException ignored) {}
 			}
+			for(File file:files){
+			   try {
+				  Document doc = fileList.getDocument();
+				  doc.insertString(doc.getLength(), file.getAbsolutePath() +"\n", null);
+			   } catch(BadLocationException exc) {
+				  exc.printStackTrace();
+			   }
+			}
+			batchFileList.addAll(files);
 		});
 	}
 
@@ -336,10 +270,11 @@ public class BatchOperationWindow extends JFrame {
 
 	public void runBatch(){
 		final CommandDescription command = ((CommandDescription) selectedBatchOperation.getSelectedItem());
+		assert command != null;
 		Main.getPreferences().put(LAST_USED_COMMAND_KEY, command.name);
 
 		(new Worker(){
-			ActionStatus actionStatus = new ActionStatus() {
+			final ActionStatus actionStatus = new ActionStatus() {
 				@Override
 				public void addStatus(String filename, String message) {
 					publish(new FileOpResult(filename, message, false));
@@ -352,7 +287,7 @@ public class BatchOperationWindow extends JFrame {
 				
 			};
 			@Override
-			protected Void doInBackground() throws Exception {
+			protected Void doInBackground() {
 				BatchOperationParameters params =getBatchParameters(command);
 				params.storeForCommand(command);
 
@@ -364,12 +299,10 @@ public class BatchOperationWindow extends JFrame {
 	       protected void done() {
 				try {
 				   get();
-				} catch (InterruptedException e) {
+				} catch (InterruptedException | ExecutionException e) {
 					appendError(e);
-				} catch (ExecutionException e) {
-					appendError(e);
- 				}
- 			    onDone();
+				}
+			   onDone();
 	       }
 		}).execute();
 	}
@@ -399,8 +332,8 @@ public class BatchOperationWindow extends JFrame {
 		String filename;
 		String message;
 		boolean error;
-	};
-	
+	}
+
 	abstract class Worker extends SwingWorker<Void, FileOpResult>{
 	    @Override
 	    protected void process(List<FileOpResult> chunks) {
@@ -434,6 +367,7 @@ public class BatchOperationWindow extends JFrame {
 			parametersWindow = null;
 		}
 
+		assert command != null;
 		BatchOperationParameters params =getBatchParameters(command);
 		
 		if( command.is("clear") ){	
@@ -455,11 +389,8 @@ public class BatchOperationWindow extends JFrame {
 	public void createBatchParametersWindowButton(){
 		final CommandDescription command = ((CommandDescription) selectedBatchOperation.getSelectedItem());
 
-		if( command.is("clear") || command.is("rename") || command.is("edit")){
-			btnParameters.setEnabled(true);
-		} else {
-			btnParameters.setEnabled(false);
-		}
+		assert command != null;
+		btnParameters.setEnabled(command.is("clear") || command.is("rename") || command.is("edit"));
 	}
 
 }

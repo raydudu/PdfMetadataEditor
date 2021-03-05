@@ -8,15 +8,11 @@ import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
+import java.util.Objects;
 import java.util.prefs.Preferences;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultComboBoxModel;
@@ -31,7 +27,6 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
-import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -41,14 +36,7 @@ import javax.swing.border.TitledBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.HyperlinkEvent;
-import javax.swing.event.HyperlinkListener;
 import javax.swing.text.JTextComponent;
-
-import org.apache.http.Header;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpHead;
-import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
-import org.apache.http.impl.nio.client.HttpAsyncClients;
 
 import net.miginfocom.swing.MigLayout;
 
@@ -72,16 +60,14 @@ public class PreferencesWindow extends JDialog {
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					PreferencesWindow frame = new PreferencesWindow(Preferences.userRoot().node("PDFMetadataEditor"),
-							null);
-					frame.setVisible(true);
-					frame.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+		EventQueue.invokeLater(() -> {
+			try {
+				PreferencesWindow frame = new PreferencesWindow(Preferences.userRoot().node("PDFMetadataEditor"),
+						null);
+				frame.setVisible(true);
+				frame.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
 		});
 	}
@@ -99,16 +85,10 @@ public class PreferencesWindow extends JDialog {
 	public PreferencesWindow(final Preferences prefs, MetadataInfo defaultMetadata, final Frame owner) {
 		super(owner, true);
 		setLocationRelativeTo(owner);
-		long startTime = System.nanoTime();
 
-		final Future<HttpResponse> status=checkForUpdates();
 		isWindows = System.getProperty("os.name").startsWith("Windows");
 		this.prefs = prefs;
-		if (defaultMetadata != null) {
-			this.defaultMetadata = defaultMetadata;
-		} else {
-			this.defaultMetadata = new MetadataInfo();
-		}
+		this.defaultMetadata = Objects.requireNonNullElseGet(defaultMetadata, MetadataInfo::new);
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent arg0) {
@@ -150,27 +130,23 @@ public class PreferencesWindow extends JDialog {
 		panel_1.setLayout(new MigLayout("", "[]", "[][]"));
 
 		onsaveCopyDocumentTo = new JCheckBox("Copy Document To XMP");
-		onsaveCopyDocumentTo.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				if (onsaveCopyDocumentTo.isSelected()) {
-					onsaveCopyXmpTo.setSelected(false);
-				}
-				copyBasicToXmp = onsaveCopyDocumentTo.isSelected();
-				copyXmpToBasic = onsaveCopyXmpTo.isSelected();
+		onsaveCopyDocumentTo.addActionListener(arg0 -> {
+			if (onsaveCopyDocumentTo.isSelected()) {
+				onsaveCopyXmpTo.setSelected(false);
 			}
+			copyBasicToXmp = onsaveCopyDocumentTo.isSelected();
+			copyXmpToBasic = onsaveCopyXmpTo.isSelected();
 		});
 		panel_1.add(onsaveCopyDocumentTo, "cell 0 0,alignx left,aligny top");
 		onsaveCopyDocumentTo.setSelected(false);
 
 		onsaveCopyXmpTo = new JCheckBox("Copy XMP To Document");
-		onsaveCopyXmpTo.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				if (onsaveCopyXmpTo.isSelected()) {
-					onsaveCopyDocumentTo.setSelected(false);
-				}
-				copyBasicToXmp = onsaveCopyDocumentTo.isSelected();
-				copyXmpToBasic = onsaveCopyXmpTo.isSelected();
+		onsaveCopyXmpTo.addActionListener(arg0 -> {
+			if (onsaveCopyXmpTo.isSelected()) {
+				onsaveCopyDocumentTo.setSelected(false);
 			}
+			copyBasicToXmp = onsaveCopyDocumentTo.isSelected();
+			copyXmpToBasic = onsaveCopyXmpTo.isSelected();
 		});
 		panel_1.add(onsaveCopyXmpTo, "cell 0 1");
 		onsaveCopyXmpTo.setSelected(false);
@@ -202,15 +178,12 @@ public class PreferencesWindow extends JDialog {
 		txtpnAaa.setFont(UIManager.getFont("TextPane.font"));
 		txtpnAaa.setCaretPosition(0);
 
-		comboBox = new JComboBox();
-		comboBox.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				showPreview((String) getRenameTemplateCombo().getModel().getSelectedItem());
-			}
-		});
+		comboBox = new JComboBox<>(new DefaultComboBoxModel<>(new String[]{"", "{doc.author} - {doc.title}.pdf",
+				"{doc.author} - {doc.creationDate}.pdf"}));
+		comboBox.addActionListener(arg0 -> showPreview((String) getRenameTemplateCombo().getModel().getSelectedItem()));
 		comboBox.setEditable(true);
-		comboBox.setModel(new DefaultComboBoxModel(new String[] { "", "{doc.author} - {doc.title}.pdf",
-				"{doc.author} - {doc.creationDate}.pdf" }));
+		//comboBox.setModel(new DefaultComboBoxModel(new String[] { "", "{doc.author} - {doc.title}.pdf",
+		//		"{doc.author} - {doc.creationDate}.pdf" }));
 		panel.add(comboBox, "cell 0 0,growx");
 
 		JPanel saveActionPanel = new JPanel();
@@ -221,13 +194,12 @@ public class PreferencesWindow extends JDialog {
 
 		final JRadioButton rdbtnSave = new JRadioButton("Save");
 
+		ButtonGroup buttonGroup = new ButtonGroup();
 		buttonGroup.add(rdbtnSave);
 		saveActionPanel.add(rdbtnSave, "flowy,cell 0 0,alignx left,aligny top");
 
 		final JRadioButton rdbtnSaveAndRename = new JRadioButton("Save & rename");
-		rdbtnSaveAndRename.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-			}
+		rdbtnSaveAndRename.addActionListener(e -> {
 		});
 		buttonGroup.add(rdbtnSaveAndRename);
 
@@ -283,31 +255,25 @@ public class PreferencesWindow extends JDialog {
 		panel_2.setLayout(new MigLayout("", "[][]", "[growprio 50,grow][growprio 50,grow]"));
 
 		JButton btnRegister = new JButton("Add to context menu");
-		btnRegister.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				try {
-					WindowsRegisterContextMenu.register();
-				} catch (Exception e1) {
-					// StringWriter sw = new StringWriter();
-					// PrintWriter pw = new PrintWriter(sw);
-					// e1.printStackTrace(pw);
-					// JOptionPane.showMessageDialog(owner,
-					// "Failed to register context menu:\n" + e1.toString()
-					// +"\n" +sw.toString());
-					JOptionPane.showMessageDialog(owner, "Failed to register context menu:\n" + e1.toString());
-					e1.printStackTrace();
-				}
-
+		btnRegister.addActionListener(e -> {
+			try {
+				WindowsRegisterContextMenu.register();
+			} catch (Exception e1) {
+				// StringWriter sw = new StringWriter();
+				// PrintWriter pw = new PrintWriter(sw);
+				// e1.printStackTrace(pw);
+				// JOptionPane.showMessageDialog(owner,
+				// "Failed to register context menu:\n" + e1.toString()
+				// +"\n" +sw.toString());
+				JOptionPane.showMessageDialog(owner, "Failed to register context menu:\n" + e1.toString());
+				e1.printStackTrace();
 			}
+
 		});
 		panel_2.add(btnRegister, "cell 0 0,growx,aligny center");
 
 		JButton btnUnregister = new JButton("Remove from context menu");
-		btnUnregister.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				WindowsRegisterContextMenu.unregister();
-			}
-		});
+		btnUnregister.addActionListener(e -> WindowsRegisterContextMenu.unregister());
 
 		final JLabel lblNewLabel_1 = new JLabel("");
 		panel_2.add(lblNewLabel_1, "cell 1 0 1 2");
@@ -316,148 +282,28 @@ public class PreferencesWindow extends JDialog {
 
 		btnRegister.setEnabled(isWindows);
 		btnUnregister.setEnabled(isWindows);
-		
-		JPanel panelBatchLicense = new JPanel();
-		tabbedPane.addTab("License", null, panelBatchLicense, null);
-		GridBagLayout gbl_panelBatchLicense = new GridBagLayout();
-		gbl_panelBatchLicense.columnWidths = new int[]{0, 0, 0};
-		gbl_panelBatchLicense.rowHeights = new int[]{0, 0, 0, 0, 0};
-		gbl_panelBatchLicense.columnWeights = new double[]{0.0, 1.0, Double.MIN_VALUE};
-		gbl_panelBatchLicense.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
-		panelBatchLicense.setLayout(gbl_panelBatchLicense);
-		
-		JTextPane txtpnEnterLicenseInformation = new JTextPane();
-		txtpnEnterLicenseInformation.setEditable(false);
-		txtpnEnterLicenseInformation.setBackground(UIManager.getColor("Panel.background"));
-		txtpnEnterLicenseInformation.setContentType("text/html");
-		txtpnEnterLicenseInformation.setText("<h3 align='center'>Enter license information below to use batch operations.</h3><p align='center'>You can get license at <a href=\""+ Constants.batchLicenseUrl +"\">" + Constants.batchLicenseUrl +"</a></p>");
-		GridBagConstraints gbc_txtpnEnterLicenseInformation = new GridBagConstraints();
-		gbc_txtpnEnterLicenseInformation.gridwidth = 2;
-		gbc_txtpnEnterLicenseInformation.insets = new Insets(15, 0, 5, 0);
-		gbc_txtpnEnterLicenseInformation.fill = GridBagConstraints.HORIZONTAL;
-		gbc_txtpnEnterLicenseInformation.gridx = 0;
-		gbc_txtpnEnterLicenseInformation.gridy = 0;
-		panelBatchLicense.add(txtpnEnterLicenseInformation, gbc_txtpnEnterLicenseInformation);
-		txtpnEnterLicenseInformation.addHyperlinkListener(new HyperlinkListener() {
-			public void hyperlinkUpdate(HyperlinkEvent e) {
-				if (e.getEventType() != HyperlinkEvent.EventType.ACTIVATED) {
-					return;
-				}
-				if (!java.awt.Desktop.isDesktopSupported()) {
-					return;
-				}
-				java.awt.Desktop desktop = java.awt.Desktop.getDesktop();
-				if (!desktop.isSupported(java.awt.Desktop.Action.BROWSE)) {
-					return;
-				}
-
-				try {
-					java.net.URI uri = e.getURL().toURI();
-					desktop.browse(uri);
-				} catch (Exception e1) {
-
-				}
-			}
-		});		
-		JLabel lblNewLabel_2 = new JLabel("Email");
-		GridBagConstraints gbc_lblNewLabel_2 = new GridBagConstraints();
-		gbc_lblNewLabel_2.insets = new Insets(15, 15, 5, 5);
-		gbc_lblNewLabel_2.anchor = GridBagConstraints.EAST;
-		gbc_lblNewLabel_2.gridx = 0;
-		gbc_lblNewLabel_2.gridy = 1;
-		panelBatchLicense.add(lblNewLabel_2, gbc_lblNewLabel_2);
-		
-		emailField = new JTextField();
-		GridBagConstraints gbc_emailField = new GridBagConstraints();
-		gbc_emailField.insets = new Insets(15, 0, 5, 15);
-		gbc_emailField.fill = GridBagConstraints.HORIZONTAL;
-		gbc_emailField.gridx = 1;
-		gbc_emailField.gridy = 1;
-		panelBatchLicense.add(emailField, gbc_emailField);
-		emailField.setColumns(10);
-		emailField.setText(Main.getPreferences().get("email", ""));
-		emailField.getDocument().addDocumentListener(new DocumentListener() {
-			@Override
-			public void removeUpdate(DocumentEvent e) {
-				updateLicense();
-			}
-			
-			@Override
-			public void insertUpdate(DocumentEvent e) {
-				updateLicense();
-			}
-			
-			@Override
-			public void changedUpdate(DocumentEvent e) {
-
-			}
-		});
-		
-		JLabel lblLicenseKey = new JLabel("License key");
-		GridBagConstraints gbc_lblLicenseKey = new GridBagConstraints();
-		gbc_lblLicenseKey.anchor = GridBagConstraints.EAST;
-		gbc_lblLicenseKey.insets = new Insets(0, 15, 5, 5);
-		gbc_lblLicenseKey.gridx = 0;
-		gbc_lblLicenseKey.gridy = 2;
-		panelBatchLicense.add(lblLicenseKey, gbc_lblLicenseKey);
-		
-		keyField = new JTextField();
-		GridBagConstraints gbc_keyField = new GridBagConstraints();
-		gbc_keyField.insets = new Insets(0, 0, 5, 15);
-		gbc_keyField.fill = GridBagConstraints.HORIZONTAL;
-		gbc_keyField.gridx = 1;
-		gbc_keyField.gridy = 2;
-		panelBatchLicense.add(keyField, gbc_keyField);
-		keyField.setColumns(10);
-		keyField.setText(Main.getPreferences().get("key", ""));
-		keyField.getDocument().addDocumentListener(new DocumentListener() {
-			@Override
-			public void removeUpdate(DocumentEvent e) {
-				updateLicense();
-			}
-			
-			@Override
-			public void insertUpdate(DocumentEvent e) {
-				updateLicense();
-			}
-			
-			@Override
-			public void changedUpdate(DocumentEvent e) {
-
-			}
-		});
-		
-		labelLicenseStatus = new JLabel("No License");
-		GridBagConstraints gbc_labelLicenseStatus = new GridBagConstraints();
-		gbc_labelLicenseStatus.gridwidth = 2;
-		gbc_labelLicenseStatus.insets = new Insets(30, 15, 0, 15);
-		gbc_labelLicenseStatus.gridx = 0;
-		gbc_labelLicenseStatus.gridy = 3;
-		panelBatchLicense.add(labelLicenseStatus, gbc_labelLicenseStatus);
 
 		JScrollPane scrollPane_1 = new JScrollPane();
 		tabbedPane.addTab("About", null, scrollPane_1, null);
 
 		txtpnDf = new JTextPane();
-		txtpnDf.addHyperlinkListener(new HyperlinkListener() {
-			public void hyperlinkUpdate(HyperlinkEvent e) {
-				if (e.getEventType() != HyperlinkEvent.EventType.ACTIVATED) {
-					return;
-				}
-				if (!java.awt.Desktop.isDesktopSupported()) {
-					return;
-				}
-				java.awt.Desktop desktop = java.awt.Desktop.getDesktop();
-				if (!desktop.isSupported(java.awt.Desktop.Action.BROWSE)) {
-					return;
-				}
+		txtpnDf.addHyperlinkListener(e -> {
+			if (e.getEventType() != HyperlinkEvent.EventType.ACTIVATED) {
+				return;
+			}
+			if (!java.awt.Desktop.isDesktopSupported()) {
+				return;
+			}
+			java.awt.Desktop desktop = java.awt.Desktop.getDesktop();
+			if (!desktop.isSupported(java.awt.Desktop.Action.BROWSE)) {
+				return;
+			}
 
-				try {
-					java.net.URI uri = e.getURL().toURI();
-					desktop.browse(uri);
-				} catch (Exception e1) {
+			try {
+				java.net.URI uri = e.getURL().toURI();
+				desktop.browse(uri);
+			} catch (Exception ignored) {
 
-				}
 			}
 		});
 		txtpnDf.setContentType("text/html");
@@ -480,23 +326,19 @@ public class PreferencesWindow extends JDialog {
 				
 				updateStatusLabel = new JLabel("...");
 				panel_3.add(updateStatusLabel, BorderLayout.WEST);
-				btnClose.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						setVisible(false);
-						save();
-					}
+				btnClose.addActionListener(e -> {
+					setVisible(false);
+					save();
 				});
 
-		ActionListener onDefaultSaveAction = new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (rdbtnSave.isSelected()) {
-					defaultSaveAction = "save";
-				} else if (rdbtnSaveAndRename.isSelected()) {
-					defaultSaveAction = "saveRename";
+		ActionListener onDefaultSaveAction = e -> {
+			if (rdbtnSave.isSelected()) {
+				defaultSaveAction = "save";
+			} else if (rdbtnSaveAndRename.isSelected()) {
+				defaultSaveAction = "saveRename";
 
-				} else if (rdbtnSaveAs.isSelected()) {
-					defaultSaveAction = "saveAs";
-				}
+			} else if (rdbtnSaveAs.isSelected()) {
+				defaultSaveAction = "saveAs";
 			}
 		};
 		rdbtnSave.addActionListener(onDefaultSaveAction);
@@ -527,84 +369,22 @@ public class PreferencesWindow extends JDialog {
 			rdbtnSave.setSelected(true);
 		}
 
-		SwingUtilities.invokeLater(new Runnable() {
-
-			@Override
-			public void run() {
-				lblNewLabel_1
-						.setIcon(new ImageIcon(PreferencesWindow.class.getResource("/pmedit/os_integration_hint.png")));
-
-			}
-		});
+		SwingUtilities.invokeLater(() -> lblNewLabel_1
+				.setIcon(new ImageIcon(PreferencesWindow.class.getResource("/pmedit/os_integration_hint.png"))));
 
 		load();
 		refresh();
 		contentPane.doLayout();
 
-		if( status.isDone() ){
-			showUpdatesStatus(status);
-		} else {
-			(new Thread(new Runnable() {
-				
-				@Override
-				public void run() {
-					showUpdatesStatus(status);					
-				}
-			})).start();
-		}
-		updateLicense();
+		showUpdatesStatus();
 	}
 
-	private Future<HttpResponse> checkForUpdates() {
-		CloseableHttpAsyncClient httpclient = HttpAsyncClients.createDefault();
-		httpclient.start();
-		HttpHead request = new HttpHead("http://broken-by.me/download/pdf-metadata-editor/");
-		Future<HttpResponse> future = httpclient.execute(request, null);
-		return future;
-	}
-
-
-	private void showUpdatesStatus(Future<HttpResponse> status) {
-		String versionMsg = "<h3 align=center>Cannot get version information </h3>";
-		try {
-			HttpResponse response = status.get();
-			updateStatusLabel.setText("");
-			String file = null;
-			for (Header header : response.getHeaders("Content-Disposition")) {
-				Matcher matcher = Pattern.compile("filename=\"([^\"]+)\"").matcher(header.getValue());
-				while (matcher.find()) {
-					file = matcher.group(1);
-				}
-			}
-			if (file != null) {
-				String[] installerPatterns = {
-					"PdfMetadataEditor-(\\d+)\\.(\\d+)\\.(\\d+)-installer.jar",
-					"pdf-metadata-edit-(\\d+)\\.(\\d+)\\.(\\d+)-installer.jar",
-				};
-				Version.VersionTuple current = Version.get();
-				Version.VersionTuple latest = null;
-				for(String pattern: installerPatterns){
-					latest = new Version.VersionTuple(file, pattern);
-					if(latest.parseSuccess){
-						break;
-					}
-				}
-				if (current.cmp(latest) < 0) {
-					versionMsg = "<h3 align=center>New version available: <a href='http://broken-by.me/pdf-metadata-editor/#download'>"
-							+ latest.getAsString() + "</a> , current: " + current.getAsString() + "</h3>";
-					updateStatusLabel.setText("Newer version available:"+ latest.getAsString());
-				} else {
-					versionMsg = "<h3 align=center>Version " + current.getAsString() + " is the latest version</h3>";
-				}
-			}
-		} catch (InterruptedException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} catch (ExecutionException e1) {
-			versionMsg += "<h4 align=center>Error: " + e1.getCause().getLocalizedMessage() + "</h4>";
-		} finally {
-			txtpnDf.setText(aboutMsg + versionMsg);
-		}
+	private void showUpdatesStatus() {
+		String versionMsg;
+		updateStatusLabel.setText("");
+		Version.VersionTuple current = Version.get();
+		versionMsg = "<h3 align=center>Version " + current.getAsString() + "</h3>";
+		txtpnDf.setText(aboutMsg + versionMsg);
 	}
 
 	public void save() {
@@ -654,31 +434,19 @@ public class PreferencesWindow extends JDialog {
 		onSave = newAction;
 	}
 
-	protected void updateLicense() {
-		labelLicenseStatus.setText("Valid license");
-	}
-	
-	private String desc = "";
-	private JLabel lblNewLabel;
-	private JComboBox comboBox;
-	private JCheckBox onsaveCopyDocumentTo;
+	private final JLabel lblNewLabel;
+	private final JComboBox<String> comboBox;
+	private final JCheckBox onsaveCopyDocumentTo;
 	private JCheckBox onsaveCopyXmpTo;
-	private final ButtonGroup buttonGroup = new ButtonGroup();
-	private String aboutMsg;
-	private JTextPane txtpnDf;
-	private JLabel updateStatusLabel;
-	private JTextField emailField;
-	private JTextField keyField;
-	private JLabel labelLicenseStatus;
+	private final String aboutMsg;
+	private final JTextPane txtpnDf;
+	private final JLabel updateStatusLabel;
 
 	protected JLabel getPreviewLabel() {
 		return lblNewLabel;
 	}
 
-	protected JComboBox getRenameTemplateCombo() {
+	protected JComboBox<String> getRenameTemplateCombo() {
 		return comboBox;
-	}
-	protected JLabel getUpdateStatusLabel() {
-		return updateStatusLabel;
 	}
 }

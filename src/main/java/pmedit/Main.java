@@ -27,14 +27,15 @@ public class Main {
 	public static String getBatchGuiCommand(){
 		return "batch-gui-"+ batchGuiCounter++;
 	}
-	
-	static BlockingQueue<CommandLine> cmdQueue = new LinkedBlockingDeque<CommandLine>();
+
+	static BlockingQueue<CommandLine> cmdQueue = new LinkedBlockingDeque<>();
 	static class CommandsExecutor extends SwingWorker<Void, CommandLine> {
-		 CommandsExecutor() {
+		CommandsExecutor() {
 			 //initialize
 		 }
 
 		 @Override
+		 @SuppressWarnings("InfiniteLoopStatement")
 		 public Void doInBackground() {
 			 while(true){
 				CommandLine cmdLine;
@@ -94,7 +95,7 @@ public class Main {
 			makeBatchWindow(getBatchGuiCommand(), null, cmdLine.fileList);
 			return;
 		}
-		List<String> files = new ArrayList<String>(cmdLine.fileList);
+		List<String> files = new ArrayList<>(cmdLine.fileList);
 		if( files.size() == 0){
 			files.add(null);
 		}
@@ -159,11 +160,11 @@ public class Main {
 	
 		    output.printf("%s:: %s\r\n", context, line == null ? "null" : line);
 		    output.close();
-		}  catch (Exception e) {} 	
+		}  catch (Exception ignored) {}
 	}
 	
-	static Map<String, BatchOperationWindow> batchInstances= new HashMap<String, BatchOperationWindow>();
-	static List<PDFMetadataEditWindow> editorInstances = new ArrayList<PDFMetadataEditWindow>();
+	static Map<String, BatchOperationWindow> batchInstances= new HashMap<>();
+	static List<PDFMetadataEditWindow> editorInstances = new ArrayList<>();
 
 	public static void maybeExit(){
 		if( batchInstances.size() == 0 && editorInstances.size() == 0 && cmdQueue.size() == 0){
@@ -176,17 +177,17 @@ public class Main {
 	}
 
 	public static void main(final String[] args) {
-		CommandLine cmdLine = null; 
+		CommandLine cmdLine;
 	    try {
 	    	cmdLine = CommandLine.parse(args);
 		} catch (ParseError e) {
 			Main.logLine("ParseError", e.toString());
-			System.err.println(e);
+			System.err.println(e.toString());
 			return;
 		}
 	    //System.out.println(cmdLine);
 	    if(cmdLine.noGui){
-	    	MainCli.main(cmdLine);
+	    	MainCli.executeCommand(cmdLine);
 	    	return;
 	    }
 //	    try {
@@ -209,12 +210,10 @@ public class Main {
 		   while(numWindows() == 0){
 				try {
 					commandsExecutor.get(50, TimeUnit.MILLISECONDS);
-				} catch (TimeoutException e) {
+				} catch (TimeoutException ignored) {
 				}
 		   }
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} catch (ExecutionException e) {
+		} catch (InterruptedException | ExecutionException e) {
 			e.printStackTrace();
 		}
 	}
